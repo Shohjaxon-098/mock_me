@@ -1,3 +1,4 @@
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:talaba_uz/utils/tools/file_important.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -48,8 +49,8 @@ class _SplashScreenState extends State<SplashScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset(
-                "assets/images/splash_logo.png",
+              SvgPicture.asset(
+                "assets/icons/splash_mock.svg",
                 width: width(context) * 0.22,
               ),
               Text(

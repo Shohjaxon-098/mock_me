@@ -30,16 +30,9 @@ class StartPage extends StatelessWidget {
                   flex: 2,
                   child: Column(
                     children: [
-                      Container(
-                        width: 56,
-                        height: 56,
-                        decoration: const BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage(
-                              "assets/images/splash_logo.png",
-                            ),
-                          ),
-                        ),
+                      SvgPicture.asset(
+                        "assets/icons/splash_mock.svg",
+                        width: 54,
                       ),
                       Text(
                         "Mock-Me",
