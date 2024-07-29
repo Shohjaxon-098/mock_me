@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:talaba_uz/services/apis/api_service.dart';
 
 import 'package:talaba_uz/ui/pages/diagnost/finish_button/finish_button.dart';
@@ -8,6 +7,7 @@ import 'package:talaba_uz/ui/pages/diagnost/menu_widget/menu_widget.dart';
 import 'package:talaba_uz/ui/pages/diagnost/test_card/test_card.dart';
 
 import '../../../services/model/responses/dtm_test_code.dart';
+import 'swipe_button/swipe_button.dart';
 import 'timer_widget.dart';
 
 class DiagnosticTest extends StatefulWidget {
@@ -24,8 +24,8 @@ class _DiagnosticTestState extends State<DiagnosticTest> {
   int _selectedIndex = 0;
   final Map<String, Map<int, int>> _selectedAnswerIndices = {};
   int totalSections = 0;
-
-  DtmTestCode? _testCode;
+  List<SpecialTests> specialTests = [];
+  List<SubjectTests> subjectTests = [];
   bool _isLoading = true;
 
   @override
@@ -39,10 +39,10 @@ class _DiagnosticTestState extends State<DiagnosticTest> {
     final data = await apiService.dtmTestCollection(widget.dtmTestCode);
 
     if (data != null) {
-      debugPrint('Data fetched successfully: ${data.toJson()}');
       setState(() {
-        _testCode = data;
-        totalSections = data.specialTests.length + data.subjectTests.length;
+        specialTests = data.specialTests;
+        subjectTests = data.subjectTests;
+        totalSections = specialTests.length + subjectTests.length;
         _isLoading = false;
       });
     } else {
@@ -104,41 +104,22 @@ class _DiagnosticTestState extends State<DiagnosticTest> {
 
   @override
   Widget build(BuildContext context) {
-    List<SpecialTests> specialTests = _testCode?.specialTests ?? [];
-    List<SubjectTests> subjectTests = _testCode?.subjectTests ?? [];
-
     // Extract unique subjects from both specialTests and subjectTests
     List<String> subjects = [
       ...specialTests.map((test) => test.specialQuestion.subjectCode),
       ...subjectTests.map((test) => test.question.subjectCode),
     ].toSet().toList();
 
-    // Ensure the subjects are properly mapped
-    if (subjects.isEmpty) {
-      debugPrint('No subjects found.');
-    } else {
-      debugPrint('Subjects: $subjects');
-    }
-
     // Determine current subject based on selected index
-    String currentSubject =
-    (subjects.isNotEmpty && _selectedIndex < subjects.length)
+    String currentSubject = (subjects.isNotEmpty && _selectedIndex < subjects.length)
         ? subjects[_selectedIndex]
         : '';
 
     // Filter tests based on current subject
-    List<SpecialTests> currentSpecialTests = specialTests
-        .where((test) => test.specialQuestion.subjectCode == currentSubject)
-        .toList();
-
-    List<SubjectTests> currentSubjectTests = subjectTests
-        .where((test) => test.question.subjectCode == currentSubject)
-        .toList();
-
-    // Debug output for filtered tests
-    debugPrint('Current Subject: $currentSubject');
-    debugPrint('Special Tests for current subject: $currentSpecialTests');
-    debugPrint('Subject Tests for current subject: $currentSubjectTests');
+    List<dynamic> currentTests = [
+      ...specialTests.where((test) => test.specialQuestion.subjectCode == currentSubject),
+      ...subjectTests.where((test) => test.question.subjectCode == currentSubject),
+    ];
 
     return SafeArea(
       child: Scaffold(
@@ -155,9 +136,7 @@ class _DiagnosticTestState extends State<DiagnosticTest> {
           centerTitle: true,
         ),
         body: _isLoading
-            ? const Center(
-          child: CircularProgressIndicator.adaptive(),
-        )
+            ? const Center(child: CircularProgressIndicator.adaptive())
             : Padding(
           padding: const EdgeInsets.all(24.0),
           child: Column(
@@ -169,44 +148,18 @@ class _DiagnosticTestState extends State<DiagnosticTest> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Align(
-                        alignment: Alignment.bottomCenter,
-                        child: GestureDetector(
-                          onTap: () {
-                            _goToPreviousQuestion();
-                          },
-                          child: SizedBox(
-                            width: 30,
-                            height: 30,
-                            child: SvgPicture.asset(
-                              _selectedIndex == 0
-                                  ? 'assets/icons/swipe_noactive_left.svg'
-                                  : 'assets/icons/swipe_active_left.svg',
-                              semanticsLabel: 'Swipe Left',
-                            ),
-                          ),
-                        ),
+                      SwipeButton(
+                        activeIconPath: 'assets/icons/swipe_active_left.svg',
+                        inActiveIconPath: 'assets/icons/swipe_noactive_left.svg',
+                        isActive: _selectedIndex > 0,
+                        onTap: _goToPreviousQuestion,
                       ),
-                      const Expanded(
-                        child: TimerWidget(),
-                      ),
-                      Align(
-                        alignment: Alignment.bottomCenter,
-                        child: GestureDetector(
-                          onTap: () {
-                            _goToNextQuestion();
-                          },
-                          child: SizedBox(
-                            width: 30,
-                            height: 30,
-                            child: SvgPicture.asset(
-                              _selectedIndex == totalSections - 1
-                                  ? 'assets/icons/swipe_noactive_right.svg'
-                                  : 'assets/icons/swipe_active_right.svg',
-                              semanticsLabel: 'Swipe Right',
-                            ),
-                          ),
-                        ),
+                      const Expanded(child: TimerWidget()),
+                      SwipeButton(
+                        activeIconPath: 'assets/icons/swipe_active_right.svg',
+                        inActiveIconPath: 'assets/icons/swipe_noactive_right.svg',
+                        isActive: _selectedIndex < totalSections - 1,
+                        onTap: _goToNextQuestion,
                       ),
                     ],
                   ),
@@ -253,53 +206,32 @@ class _DiagnosticTestState extends State<DiagnosticTest> {
                   children: [
                     ListView.builder(
                       scrollDirection: Axis.vertical,
-                      itemCount: currentSpecialTests.length,
+                      itemCount: currentTests.length,
                       itemBuilder: (context, index) {
-                        final test = currentSpecialTests[index];
+                        final test = currentTests[index];
+                        final isSpecialTest = test is SpecialTests;
+
                         return Padding(
                           padding: const EdgeInsets.only(
-                              bottom: 12.0, left: 18.0, right: 10),
+                            bottom: 12.0,
+                            left: 18.0,
+                            right: 10,
+                          ),
                           child: TestCard(
-                            question:
-                            '${index + 1}. ${test.specialQuestion.text}',
-                            answers:
-                            test.options.map((e) => e.text).toList(),
+                            question: '${index + 1}. ${isSpecialTest ? (test as SpecialTests).specialQuestion.text : (test as SubjectTests).question.text}',
+                            answers: (isSpecialTest ? (test as SpecialTests).options : (test as SubjectTests).options).map((e) => e.text).toList(),
                             onAnswerSelected: (selectedIndex) {
                               setState(() {
                                 _onAnswerSelected(
-                                    test.specialQuestion.subjectCode,
-                                    index,
-                                    selectedIndex);
+                                  isSpecialTest ? (test as SpecialTests).specialQuestion.subjectCode : (test as SubjectTests).question.subjectCode,
+                                  index,
+                                  selectedIndex,
+                                );
                               });
                             },
-                            selectedIndex: _selectedAnswerIndices[test
-                                .specialQuestion
-                                .subjectCode]?[index] ??
-                                -1,
-                          ),
-                        );
-                      },
-                    ),
-                    ListView.builder(
-                      scrollDirection: Axis.vertical,
-                      itemCount: currentSubjectTests.length,
-                      itemBuilder: (context, index) {
-                        final test = currentSubjectTests[index];
-                        return Padding(
-                          padding: const EdgeInsets.only(
-                              bottom: 12.0, left: 18.0, right: 10),
-                          child: TestCard(
-                            question:
-                            '${index + 1}. ${test.question.text}',
-                            answers:
-                            test.options.map((e) => e.text).toList(),
-                            onAnswerSelected: (selectedIndex) {
-                              _onAnswerSelected(test.question.subjectCode,
-                                  index, selectedIndex);
-                            },
                             selectedIndex: _selectedAnswerIndices[
-                            test.question.subjectCode]?[index] ??
-                                -1,
+                            isSpecialTest ? (test as SpecialTests).specialQuestion.subjectCode : (test as SubjectTests).question.subjectCode
+                            ]?[index] ?? -1,
                           ),
                         );
                       },
@@ -308,19 +240,20 @@ class _DiagnosticTestState extends State<DiagnosticTest> {
                 ),
               ),
               const SizedBox(height: 36),
-              if (_selectedIndex == totalSections - 1)
+              if (_selectedIndex == subjects.length - 1)
                 FinishButton(
                   onPressed: () async {
                     final apiService = ApiService();
                     await apiService.dtmTestCollection(widget.dtmTestCode);
 
                     Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const GeneralResult()),
-                            (route) => false);
-
-                    },
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const GeneralResult(),
+                      ),
+                          (route) => false,
+                    );
+                  },
                 ),
             ],
           ),
