@@ -99,18 +99,37 @@ class _HomeState extends State<Home> {
 
   Future<void> _fetchData() async {
     try {
-      Response response = await _dio.get("$baseUrl/api/v1/dtmtests/direction/");
+      Response response =
+          await _dio.get("$baseUrl/api/v1/dtmtests/result/$userId");
 
       if (response.statusCode == 200) {
         var responseData = response.data;
-        if (responseData != null &&
-            responseData.containsKey('date') &&
-            responseData.containsKey('point')) {
-          setState(() {
-            jsonDegree = responseData;
-          });
+
+        // Print the response data to understand its structure
+        print('Response Data: $responseData');
+
+        if (responseData is List && responseData.isNotEmpty) {
+          // Process the list only if it is not empty
+          for (var item in responseData) {
+            // Check if item is a Map and contains the required keys
+            if (item is Map<String, dynamic>) {
+              if (item.containsKey('date') && item.containsKey('point')) {
+                setState(() {
+                  jsonDegree = item; // Store the first valid item found
+                });
+                break; // Exit after finding the first valid item
+              }
+            } else {
+              print(
+                  'Error: Expected Map<String, dynamic> but received ${item.runtimeType}');
+            }
+          }
+          if (jsonDegree == null) {
+            print('Error: No valid data found in response');
+          }
         } else {
-          print('Error: Date or point not found in response data');
+          // Handle the case where the list is empty
+          print('No data available for the request');
         }
       } else {
         print('Failed to fetch data: ${response.statusCode}');
@@ -120,12 +139,14 @@ class _HomeState extends State<Home> {
     }
   }
 
-  _textFromJsonDegree() {
-    if (jsonDegree != null && jsonDegree.containsKey('test_id')) {
+  String _textFromJsonDegree() {
+    if (jsonDegree != null && jsonDegree is Map<String, dynamic>) {
       var testId = jsonDegree['test_id'];
-      if (testId != null && testId.containsKey('subject')) {
+
+      if (testId is Map<String, dynamic> && testId.containsKey('subject')) {
         var subject = testId['subject'];
-        if (subjectChoices.containsKey(subject)) {
+
+        if (subjectChoices is Map && subjectChoices.containsKey(subject)) {
           return "${subjectChoices[subject]} fanidan";
         }
       }
@@ -203,8 +224,12 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),
-      body: jsonDegree == null
+      body: isLoading
           ? Padding(
+              padding: const EdgeInsets.only(left: 20, top: 30, right: 20),
+              child: _buildLoadingShimmerTests(),
+            )
+          : Padding(
               padding: const EdgeInsets.only(left: 20, top: 30, right: 20),
               child: SingleChildScrollView(
                 child: Column(
@@ -359,46 +384,7 @@ class _HomeState extends State<Home> {
                     const SizedBox(
                       height: 28,
                     ),
-                    isLoading
-                        ? Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Shimmer.fromColors(
-                                baseColor: whiteColor,
-                                highlightColor: Colors.grey[200]!,
-                                child: SizedBox(
-                                  width: width(context) * 0.4,
-                                  height: height(context) * 0.03,
-                                  child: Card(
-                                    color: whiteColor,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 18,
-                              ),
-                              SizedBox(
-                                height: height(context) * 0.23,
-                                child: GridView.builder(
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  itemCount: 2,
-                                  gridDelegate:
-                                      const SliverGridDelegateWithFixedCrossAxisCount(
-                                          childAspectRatio: 1 / 1,
-                                          crossAxisCount: 2,
-                                          mainAxisSpacing: 15,
-                                          crossAxisSpacing: 15),
-                                  itemBuilder: (context, index) =>
-                                      Shimmer.fromColors(
-                                    baseColor: whiteColor,
-                                    highlightColor: Colors.grey[200]!,
-                                    child: const Card(),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          )
-                        : testlar(),
+                    testlar(),
                     const SizedBox(
                       height: 28,
                     ),
@@ -406,10 +392,6 @@ class _HomeState extends State<Home> {
                   ],
                 ),
               ),
-            )
-          : Padding(
-              padding: const EdgeInsets.only(left: 20, top: 30, right: 20),
-              child: _buildLoadingShimmerTests(),
             ),
     );
   }
