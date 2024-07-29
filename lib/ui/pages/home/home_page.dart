@@ -2,6 +2,9 @@
 
 import 'package:talaba_uz/utils/tools/file_important.dart';
 
+import '../../../services/model/responses/dtm_direction/dtm_direction.dart';
+import '../diagnost/variant_subject.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -76,12 +79,14 @@ class _HomeState extends State<Home> {
   TextEditingController url = TextEditingController();
   final Dio _dio = Dio();
   late int userId = 0;
+
+  List<DtmDirection> dtmDirections = [];
   @override
   void initState() {
     super.initState();
     _fetchData();
-    testData();
     _loadUserId();
+    fetchAndSetTests();
   }
 
   Future<void> _loadUserId() async {
@@ -94,8 +99,7 @@ class _HomeState extends State<Home> {
 
   Future<void> _fetchData() async {
     try {
-      Response response =
-          await _dio.get("$baseUrl/api/v1/results/lastsolvedtestget/$userId/");
+      Response response = await _dio.get("$baseUrl/api/v1/dtmtests/direction/");
 
       if (response.statusCode == 200) {
         var responseData = response.data;
@@ -129,21 +133,31 @@ class _HomeState extends State<Home> {
     return "Noma'lum fan";
   }
 
-  Future<void> testData() async {
-    Response response =
-        await _dio.get("$baseUrl/api/v1/dtmtest/testcollections/");
+  bool isLoading = true;
 
+  Future<void> fetchAndSetTests() async {
     try {
-      if (response.statusCode == 200) {
-        setState(() {
-          jsonList = response.data;
-        });
-      } else {
-        print('Failed to fetch data: ${response.statusCode}');
-      }
+      List<DtmDirection> directions = await fetchTests();
+      setState(() {
+        dtmDirections = directions;
+        isLoading = false;
+      });
     } catch (e) {
-      print(response.data);
       print('Error: $e');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<List<DtmDirection>> fetchTests() async {
+    Response response = await _dio.get("$baseUrl/api/v1/dtmtests/directions/");
+
+    if (response.statusCode == 200) {
+      List<dynamic> jsonList = response.data;
+      return jsonList.map((json) => DtmDirection.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to fetch data: ${response.statusCode}');
     }
   }
 
@@ -189,7 +203,7 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),
-      body: jsonDegree != null || jsonList != null
+      body: jsonDegree == null
           ? Padding(
               padding: const EdgeInsets.only(left: 20, top: 30, right: 20),
               child: SingleChildScrollView(
@@ -345,9 +359,8 @@ class _HomeState extends State<Home> {
                     const SizedBox(
                       height: 28,
                     ),
-                    jsonList == null
-                        ? testlar()
-                        : Column(
+                    isLoading
+                        ? Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Shimmer.fromColors(
@@ -384,7 +397,8 @@ class _HomeState extends State<Home> {
                                 ),
                               ),
                             ],
-                          ),
+                          )
+                        : testlar(),
                     const SizedBox(
                       height: 28,
                     ),
@@ -452,16 +466,25 @@ class _HomeState extends State<Home> {
         SizedBox(
           height: height(context) * 0.23,
           child: GridView.builder(
-            itemCount: 2,
+            itemCount: dtmDirections.length,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 childAspectRatio: 1 / 1,
                 crossAxisCount: 2,
                 mainAxisSpacing: 15,
                 crossAxisSpacing: 15),
-            itemBuilder: (context, index) => TestWidget(
-              subjectChoices[jsonList[index]['subject']].toString(),
-              jsonList[index]['tests'].length,
-            ),
+            itemBuilder: (context, index) {
+              final direction = dtmDirections[index];
+              return TestWidget(direction.name, () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => VariantSubject(
+                            directionCode: direction.id.toString(),
+                            name: direction.name,
+                          )),
+                );
+              });
+            },
             physics: const NeverScrollableScrollPhysics(),
           ),
         ),

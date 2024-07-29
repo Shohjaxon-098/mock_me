@@ -4,9 +4,12 @@ import 'package:talaba_uz/utils/tools/file_important.dart';
 
 class TestWidget extends StatelessWidget {
   // ignore: use_key_in_widget_constructors
-  const TestWidget(this.subject, this.question);
+  const TestWidget(
+    this.subject,
+    this.onPressed,
+  );
   final String subject;
-  final int question;
+  final Function? onPressed;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -54,7 +57,7 @@ class TestWidget extends StatelessWidget {
                 subject,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 4.5 * devisePixel(context),
+                  fontSize: 4.3 * devisePixel(context),
                 ),
               ),
               const Padding(
@@ -75,7 +78,7 @@ class TestWidget extends StatelessWidget {
                     ),
                     const Spacer(),
                     Text(
-                      question.toString(),
+                      "12",
                       style: TextStyle(
                         fontSize: 4 * devisePixel(context),
                         fontWeight: FontWeight.w600,
@@ -101,7 +104,7 @@ class TestWidget extends StatelessWidget {
                     ),
                     Spacer(),
                     Text(
-                      "30 Min",
+                      "90 Min",
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 4 * devisePixel(context),
@@ -117,7 +120,7 @@ class TestWidget extends StatelessWidget {
                 width: width(context) * 0.26,
                 height: 24,
                 child: WElevatedButton(
-                  onPressed: () {},
+                  onPressed: onPressed,
                   text: Text(
                     "Boshlash",
                     style: TextStyle(
