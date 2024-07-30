@@ -6,7 +6,6 @@ import 'build_section.dart';
 
 class GeneralResult extends StatefulWidget {
   const GeneralResult({super.key});
-
   @override
   State<GeneralResult> createState() => _GeneralResultState();
 }
@@ -19,21 +18,32 @@ class _GeneralResultState extends State<GeneralResult> {
   String errorMessage = '';
 
 
+
   Future<void> fetchResult() async {
     try {
       final response = await _dio.post('$baseUrl/api/v1/dtmtests/result/');
+
+      //Log response status and data for debugging
+      print('Response status: ${response.statusCode}');
+      print('Response data: ${response.data}');
+
       if (response.statusCode == 200) {
         setState(() {
           resultDtmModel = ResultDtmModel.fromJson(response.data);
           isLoading = false;
         });
       } else {
-        throw Exception('Failed to load data. Status code: ${response.statusCode}');
+        // Handle unexpected status codes
+        setState(() {
+          errorMessage = 'Failed to load data. Status code: ${response.statusCode}';
+          isLoading = false;
+        });
+        print('Failed to load data. Status code: ${response.statusCode}');
       }
     } catch (e) {
       setState(() {
-        isLoading = false;
         errorMessage = 'Error: $e';
+        isLoading = false;
       });
       print('Error: $e');
     }

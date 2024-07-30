@@ -56,7 +56,7 @@ class _VariantSubjectState extends State<VariantSubject> {
           '${widget.name}',
           style: TextStyle(
             fontSize: 20,
-            fontWeight: FontWeight.bold,
+            fontFamily: 'Inter-SemiBold',
           ),
         ),
       ),
@@ -89,7 +89,8 @@ class _VariantSubjectState extends State<VariantSubject> {
                             style: TextStyle(
                               color: Color(0xFF264CEC),
                               fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                         //     fontWeight: FontWeight.bold,
+                              fontFamily: 'Inter-SemiBold',
                             ),
                           ),
                           Row(
@@ -101,7 +102,8 @@ class _VariantSubjectState extends State<VariantSubject> {
                                 style: TextStyle(
                                   color: Color(0xFF080317),
                                   fontSize: 14,
-                                  fontWeight: FontWeight.bold,
+                           //       fontWeight: FontWeight.bold,
+                                  fontFamily: 'Inter-SemiBold',
                                 ),
                               ),
                             ],
@@ -117,6 +119,7 @@ class _VariantSubjectState extends State<VariantSubject> {
                           style: TextStyle(
                             color: Color(0xFF080317),
                             fontSize: 12,
+                            fontFamily: 'Inter-Bold',
                           ),
                         ),
                       ),
@@ -129,6 +132,7 @@ class _VariantSubjectState extends State<VariantSubject> {
                           style: TextStyle(
                             color: Color(0xFF080317),
                             fontSize: 12,
+                            fontFamily: 'Inter-Bold',
                           ),
                         ),
                       ),
@@ -140,6 +144,7 @@ class _VariantSubjectState extends State<VariantSubject> {
                           style: TextStyle(
                             color: Color(0xFF080317),
                             fontSize: 12,
+                            fontFamily: 'Inter-Bold',
                           ),
                         ),
                       ),

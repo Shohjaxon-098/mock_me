@@ -58,6 +58,7 @@ class _DtmTestsState extends State<DtmTests> {
           style: TextStyle(
             fontSize: 6 * devisePixel(context),
             fontWeight: FontWeight.w600,
+            fontFamily: 'Inter-SemiBold'
           ),
         ),
         backgroundColor: Colors.transparent,
@@ -96,6 +97,7 @@ class _DtmTestsState extends State<DtmTests> {
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: devisePixel(context) * 4.5,
+                          fontFamily: 'Inter-SemiBold'
                         ),
                       ),
                       const Spacer(),
@@ -117,7 +119,9 @@ class _DtmTestsState extends State<DtmTests> {
                             style: TextStyle(
                                 color: whiteColor,
                                 fontSize: devisePixel(context) * 3.5,
-                                letterSpacing: 0.7),
+                                letterSpacing: 0.7,
+                                fontFamily: 'Inter-Medium',
+                            ),
                           ),
                         ),
                       ),

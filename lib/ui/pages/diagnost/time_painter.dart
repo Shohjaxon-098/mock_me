@@ -30,6 +30,7 @@ class TimePainter extends CustomPainter {
         style: const TextStyle(
           fontSize: 24,
           color: Color(0xFF1E1E1E),
+          fontFamily: 'Inter-Medium'
         ),
         children: [
           TextSpan(text: "${hours.toString().padLeft(2, '0')} : "),
