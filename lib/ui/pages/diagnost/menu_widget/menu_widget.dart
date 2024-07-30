@@ -34,7 +34,8 @@ class MenuWidget extends StatelessWidget {
                       subjects[index],
                       style: TextStyle(
                         color: selectedIndex == index ? const Color(0xFFFFFFFF) : const Color(0xFF1E1E1E),
-                        fontWeight: FontWeight.bold,
+                        // fontWeight: FontWeight.bold,
+                        fontFamily: 'Inter-Medium',
                       ),
                     ),
                   ),

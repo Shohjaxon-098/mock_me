@@ -21,6 +21,7 @@ class StartButton extends StatelessWidget {
           style: TextStyle(
             color: Color(0xFFFFFFFF),
             fontSize: 12,
+            fontFamily: 'Inter-Medium',
           ),
         ),
       ),

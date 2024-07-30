@@ -6,30 +6,32 @@ import '../timer_widget.dart';
 class PageNavigationWidget extends StatelessWidget {
   final PageController pageController;
   final int selectedIndex;
-  final int totalSections;
+
+  final List<String> subjects;
   final VoidCallback onNext;
   final VoidCallback onPrevious;
 
   const PageNavigationWidget({
-    Key? key,
+    super.key,
     required this.pageController,
     required this.selectedIndex,
-    required this.totalSections,
+    required this.subjects,
     required this.onNext,
     required this.onPrevious,
-  }) : super(key: key);
+  });
 
   void _goToNextPage() {
-    if (selectedIndex < totalSections - 1) {
+    if (selectedIndex < subjects.length - 1) {
       onNext();
-      pageController.nextPage(
+      pageController.animateToPage(
+        selectedIndex + 1,
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
     }
   }
 
-  void _goToPreviousPage() {
+    void _goToPreviousPage() {
     if (selectedIndex > 0) {
       onPrevious();
       pageController.previousPage(
@@ -54,7 +56,7 @@ class PageNavigationWidget extends StatelessWidget {
         SwipeButton(
           activeIconPath: 'assets/icons/swipe_active_right.svg',
           inActiveIconPath: 'assets/icons/swipe_noactive_right.svg',
-          isActive: selectedIndex < totalSections - 1,
+          isActive: selectedIndex < subjects.length - 1,
           onTap: _goToNextPage,
         ),
       ],

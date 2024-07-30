@@ -27,6 +27,9 @@ class _DiagnosticTestState extends State<DiagnosticTest> {
   List<SpecialTests> specialTests = [];
   List<SubjectTests> subjectTests = [];
   bool _isLoading = true;
+  List<String> eachSubject = [];
+
+
 
   @override
   void initState() {
@@ -43,6 +46,10 @@ class _DiagnosticTestState extends State<DiagnosticTest> {
         specialTests = data.specialTests;
         subjectTests = data.subjectTests;
         totalSections = specialTests.length + subjectTests.length;
+        eachSubject = [
+          ...specialTests.map((test) => test.specialQuestion.subjectCode),
+          ...subjectTests.map((test) => test.question.subjectCode),
+        ].toSet().toList();
         _isLoading = false;
       });
     } else {
@@ -52,14 +59,31 @@ class _DiagnosticTestState extends State<DiagnosticTest> {
     }
   }
 
-  void _onNextPage(){
-    setState(() {
-      _selectedIndex++;
-    });
+  void _onNextPage() {
+    if (_selectedIndex < eachSubject.length - 1) {
+      setState(() {
+        _selectedIndex++;
+      });
+      _pageController.animateToPage(
+        _selectedIndex,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
   }
 
-  void _onPreviousPage(){
-    _selectedIndex--;
+
+  void _onPreviousPage() {
+    if (_selectedIndex > 0) {
+      setState(() {
+        _selectedIndex--;
+      });
+      _pageController.animateToPage(
+        _selectedIndex,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
   }
 
   void _onMenuItemTap(int index) {
@@ -86,6 +110,38 @@ class _DiagnosticTestState extends State<DiagnosticTest> {
         print('false $questionIndex $section');
       }
     });
+  }
+
+  double _calculateCorrectAnswers() {
+    double correctAnswers = 0.0;
+
+    for (var entry in _selectedAnswerIndices.entries) {
+      String section = entry.key;
+      Map<int, int> questionIndices = entry.value;
+
+      for (var questionEntry in questionIndices.entries) {
+       // int questionIndex = questionEntry.key;
+        int selectedIndex = questionEntry.value;
+
+        if (specialTests.any((test) =>
+        test.specialQuestion.subjectCode == section &&
+            test.options[selectedIndex].isAnswer)) {
+          correctAnswers += 1.1;
+        } else if (subjectTests.any((test) =>
+        test.question.subjectCode == section &&
+            test.question.subjectCode == 'math' &&
+            test.options[selectedIndex].isAnswer)) {
+          correctAnswers += 3.1;
+        } else if (subjectTests.any((test) =>
+        test.question.subjectCode == section &&
+            test.question.subjectCode == 'english' &&
+            test.options[selectedIndex].isAnswer)) {
+          correctAnswers += 2.1;
+        }
+      }
+    }
+
+    return double.parse(correctAnswers.toStringAsFixed(2));
   }
 
   @override
@@ -122,7 +178,8 @@ class _DiagnosticTestState extends State<DiagnosticTest> {
             "Diagnostik test",
             style: TextStyle(
               fontSize: 20,
-              fontWeight: FontWeight.bold,
+              fontFamily: 'Inter-Bold',
+              color: Color(0xFF1E1E1E),
             ),
           ),
           centerTitle: true,
@@ -140,7 +197,7 @@ class _DiagnosticTestState extends State<DiagnosticTest> {
                   child: PageNavigationWidget(
                     pageController: _pageController,
                     selectedIndex: _selectedIndex,
-                    totalSections: totalSections,
+                    subjects: subjects,
                     onNext: _onNextPage,
                     onPrevious: _onPreviousPage,
                   )
@@ -153,6 +210,7 @@ class _DiagnosticTestState extends State<DiagnosticTest> {
                   selectedIndex: _selectedIndex,
                   onMenuItemTap: _onMenuItemTap,
                   subjects: subjects,
+
                 ),
               ),
               const SizedBox(height: 14),
@@ -169,6 +227,7 @@ class _DiagnosticTestState extends State<DiagnosticTest> {
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
+                        fontFamily: 'Poppins-Medium'
                       ),
                     ),
                   ),
@@ -225,34 +284,62 @@ class _DiagnosticTestState extends State<DiagnosticTest> {
               const SizedBox(height: 36),
               if (_selectedIndex == subjects.length - 1)
                 FinishButton(
-                  onPressed: () async {
-                    try {
-                      final apiService = ApiService();
-                      await apiService.dtmTestCollection(widget.dtmTestCode);
-
-                      // Ensure the widget is still mounted before navigating
-                      if (mounted) {
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const GeneralResult(),
-                          ),
-                              (route) => false,
-                        );
-                      }
-                    } catch (e) {
-                      // Handle any errors
-                      print('Error: $e');
-                    }
-                  },
-
-
+                  onPressed: (){
+                    _handleFinishButtonPress();
+                  }
                 ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  Future<void> _handleFinishButtonPress() async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+
+      final apiService = ApiService();
+      DtmTestCode? result = await apiService.dtmTestCollection(widget.dtmTestCode);
+
+      if (result != null) {
+        if (mounted) {
+          double correctAnswers = _calculateCorrectAnswers();
+          print('Total Correct Answers: $correctAnswers');
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) => GeneralResult(), // Remove const here
+            ),
+              (route) => false,
+          );
+        }
+      } else {
+        // Handle the case where the API result is null
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Failed to finish the test. Please try again."),
+          ),
+        );
+      }
+    } catch (e) {
+      // Handle any errors
+      print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("An error occurred. Please try again."),
+        ),
+      );
+    } finally {
+      // Ensure loading state is reset
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 }
 

@@ -1,28 +1,30 @@
 class ResultDtmModel {
-  final int studentID;
+  final int studentId;
   final String testCode;
-  final int point;
+  final double point;
   final String date;
 
   ResultDtmModel({
-    required this.studentID,
+    required this.studentId,
     required this.testCode,
     required this.point,
     required this.date,
   });
 
+  // Factory method to create an instance from JSON
   factory ResultDtmModel.fromJson(Map<String, dynamic> json) {
     return ResultDtmModel(
-        studentID: json['student_id'],
-        testCode: json['test_code'],
-        point: json['point'],
-        date: json['date']
+      studentId: json['student_id'] as int,
+      testCode: json['test_code'] as String,
+      point: (json['point'] as num).toDouble(),
+      date: json['date'] as String,
     );
   }
 
-  Map<String, dynamic> toJson(){
+  // Method to convert the instance to JSON
+  Map<String, dynamic> toJson() {
     return {
-      'student_id': studentID,
+      'student_id': studentId,
       'test_code': testCode,
       'point': point,
       'date': date,
