@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:talaba_uz/services/apis/api_service.dart';
 
 import 'package:talaba_uz/ui/pages/diagnost/finish_button/finish_button.dart';
@@ -306,8 +307,12 @@ class _DiagnosticTestState extends State<DiagnosticTest> {
 
       if (result != null) {
         if (mounted) {
-          double correctAnswers = _calculateCorrectAnswers();
-          print('Total Correct Answers: $correctAnswers');
+          double point = _calculateCorrectAnswers();
+          print('Total Correct Answers: $point');
+
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setDouble('point', point);
+
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(

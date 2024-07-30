@@ -1,5 +1,6 @@
 import 'package:talaba_uz/ui/pages/diagnost/general_result/custom_button_pattern.dart';
 
+import '../../../../services/model/responses/dtm_test_model_original.dart';
 import '../../../../services/model/responses/result_dtm_model.dart';
 import '../../../../utils/tools/file_important.dart';
 import 'build_section.dart';
@@ -17,28 +18,43 @@ class _GeneralResultState extends State<GeneralResult> {
   bool isLoading = true;
   String errorMessage = '';
 
+  double _points = 0.0;
+  String? _resultMessage;
 
+
+
+
+  @override
+  void initState() {
+    fetchResult();
+    _loadPoints();
+    super.initState();
+  }
+  final testCode = '';
+  String variant = '';
 
   Future<void> fetchResult() async {
     try {
+
       final response = await _dio.post('$baseUrl/api/v1/dtmtests/result/');
 
-      //Log response status and data for debugging
+      // Log response status and data for debugging
       print('Response status: ${response.statusCode}');
       print('Response data: ${response.data}');
 
       if (response.statusCode == 200) {
         setState(() {
           resultDtmModel = ResultDtmModel.fromJson(response.data);
+          _resultMessage = 'Test Results Submitted Successfully';
           isLoading = false;
         });
       } else {
-        // Handle unexpected status codes
         setState(() {
-          errorMessage = 'Failed to load data. Status code: ${response.statusCode}';
+          errorMessage = 'Failed to load data. Status code: ${response.statusCode} - ${response.statusMessage}';
           isLoading = false;
         });
         print('Failed to load data. Status code: ${response.statusCode}');
+        print('Error response: ${response.data}');
       }
     } catch (e) {
       setState(() {
@@ -47,6 +63,13 @@ class _GeneralResultState extends State<GeneralResult> {
       });
       print('Error: $e');
     }
+  }
+
+  Future<void> _loadPoints() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _points = prefs.getDouble('point') ?? 0.0;
+    });
   }
 
   void toggleExpanded() {
@@ -88,7 +111,7 @@ class _GeneralResultState extends State<GeneralResult> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Test raqami: #${resultDtmModel?.testCode ?? ''}',
+                            'Test raqami: #${resultDtmModel?.testCode}',
                             textAlign: TextAlign.left,
                             style: TextStyle(
                               fontSize: 16,
@@ -213,7 +236,7 @@ class _GeneralResultState extends State<GeneralResult> {
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                   Text(
-                                    '${resultDtmModel?.point ?? 0}',
+                                    '${_points.toStringAsFixed(2) ?? ''}',
                                     style: TextStyle(
                                       fontSize: 14,
                                       color: Color(0xFF264CEB),
