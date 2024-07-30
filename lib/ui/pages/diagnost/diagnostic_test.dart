@@ -307,7 +307,7 @@ class _DiagnosticTestState extends State<DiagnosticTest> {
 
       if (result != null) {
         if (mounted) {
-          double point = _calculateCorrectAnswers();
+          double point = _calculateCorrectAnswers(); // receive
           print('Total Correct Answers: $point');
 
           SharedPreferences prefs = await SharedPreferences.getInstance();

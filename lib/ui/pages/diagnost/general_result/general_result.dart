@@ -111,7 +111,7 @@ class _GeneralResultState extends State<GeneralResult> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Test raqami: #${resultDtmModel?.testCode}',
+                            'Test raqami: #${resultDtmModel?.testCode}', // needs work on this
                             textAlign: TextAlign.left,
                             style: TextStyle(
                               fontSize: 16,
