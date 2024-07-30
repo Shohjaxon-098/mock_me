@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:talaba_uz/services/baseUrl_data.dart';
 import 'package:talaba_uz/ui/pages/diagnost/start_button/start_button.dart';
 
@@ -45,6 +46,13 @@ class _VariantSubjectState extends State<VariantSubject> {
     testFetching(widget.directionCode);
   }
 
+
+
+  Future<void> _saveTestCode(String testCode) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('testCode', testCode);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -85,7 +93,7 @@ class _VariantSubjectState extends State<VariantSubject> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Variant: ${test.dtmtestCode}',
+                            'Variant: ${test.dtmtestCode}',// here
                             style: TextStyle(
                               color: Color(0xFF264CEC),
                               fontSize: 16,

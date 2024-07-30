@@ -1,6 +1,5 @@
 import 'package:talaba_uz/ui/pages/diagnost/general_result/custom_button_pattern.dart';
 
-import '../../../../services/model/responses/dtm_test_model_original.dart';
 import '../../../../services/model/responses/result_dtm_model.dart';
 import '../../../../utils/tools/file_important.dart';
 import 'build_section.dart';
@@ -20,23 +19,34 @@ class _GeneralResultState extends State<GeneralResult> {
 
   double _points = 0.0;
   String? _resultMessage;
-
-
-
+  String _testCode = '';
+  String variant = '';
 
   @override
   void initState() {
-    fetchResult();
-    _loadPoints();
     super.initState();
+    fetchResult(_testCode);
+    _loadTestCode(); // Initialize testCode and fetch result here
+    _loadPoints();
   }
-  final testCode = '';
-  String variant = '';
 
-  Future<void> fetchResult() async {
+  // Future<void> _loadTestCode() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   setState(() {
+  //     testCode = prefs.getString('testCode') ?? '';
+  //     print('Loaded testCode: $testCode'); // Debugging line
+  //     if (testCode != null && testCode!.isNotEmpty) {
+  //       fetchResult();
+  //     }
+  //   });
+  // }
+
+  Future<void> fetchResult(String testCode) async {
     try {
-
-      final response = await _dio.post('$baseUrl/api/v1/dtmtests/result/');
+      final response = await _dio.post(
+        '$baseUrl/api/v1/dtmtests/result/',
+        data: {"test_code": testCode},
+      );
 
       // Log response status and data for debugging
       print('Response status: ${response.statusCode}');
@@ -72,6 +82,17 @@ class _GeneralResultState extends State<GeneralResult> {
     });
   }
 
+  Future<void> _loadTestCode() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _testCode = prefs.getString('testCode') ?? ''; // Retrieve the string value
+      print('Loaded testCode: $_testCode'); // Debugging line
+      if(_testCode.isNotEmpty){
+        fetchResult(_testCode);
+      }
+    });
+  }
+
   void toggleExpanded() {
     setState(() {
       isExpanded = !isExpanded;
@@ -94,8 +115,8 @@ class _GeneralResultState extends State<GeneralResult> {
         centerTitle: true,
       ),
       body: isLoading
-        ? Center(child: CircularProgressIndicator.adaptive(),)
-        : Column(
+          ? Center(child: CircularProgressIndicator.adaptive(),)
+          : Column(
         children: [
           Expanded(
             child: Padding(
@@ -110,74 +131,74 @@ class _GeneralResultState extends State<GeneralResult> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'Test raqami: #${resultDtmModel?.testCode}', // needs work on this
-                            textAlign: TextAlign.left,
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Color(0xFF264CEC),
-                              fontWeight: FontWeight.bold,
+                            Text(
+                              'Test raqami: #${_testCode}',
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Color(0xFF264CEC),
+                                fontWeight: FontWeight.bold,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          SizedBox(height: 16),
-                          Row(
-                            children: [
-                              Text(
-                                'Yo’nalish:',
-                                textAlign: TextAlign.left,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Color(0xCC1E1E1E),
-                                  fontWeight: FontWeight.normal,
+                            SizedBox(height: 16),
+                            Row(
+                              children: [
+                                Text(
+                                  'Yo’nalish:',
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Color(0xCC1E1E1E),
+                                    fontWeight: FontWeight.normal,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              SizedBox(width: 8),
-                              Text(
-                                'Aniq fanlar (iqtisod)',
-                                textAlign: TextAlign.left,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Color(0xFF1E1E1E),
-                                  fontWeight: FontWeight.bold,
+                                SizedBox(width: 8),
+                                Text(
+                                  'Aniq fanlar (iqtisod)',
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Color(0xFF1E1E1E),
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 16),
-                          Row(
-                            children: [
-                              Text(
-                                'Ajratilgan vaqt:',
-                                textAlign: TextAlign.left,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Color(0xCC1E1E1E),
-                                  fontWeight: FontWeight.normal,
+                              ],
+                            ),
+                            SizedBox(height: 16),
+                            Row(
+                              children: [
+                                Text(
+                                  'Ajratilgan vaqt:',
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Color(0xCC1E1E1E),
+                                    fontWeight: FontWeight.normal,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              SizedBox(width: 8),
-                              Text(
-                                '3 soat',
-                                textAlign: TextAlign.left,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Color(0xFF1E1E1E),
-                                  fontWeight: FontWeight.bold,
+                                SizedBox(width: 8),
+                                Text(
+                                  '3 soat',
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Color(0xFF1E1E1E),
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                        ],
+                              ],
+                            ),
+                          ],
                       ),
                     ),
                   ),
@@ -200,8 +221,7 @@ class _GeneralResultState extends State<GeneralResult> {
                           if (isExpanded) ...[
                             buildSubject(title: 'Ona tili', count: '10 ta'),
                             buildSubject(title: 'Matematika', count: '14 ta'),
-                            buildSubject(
-                                title: 'O\'zbekiston tarihi', count: '11 ta'),
+                            buildSubject(title: 'O\'zbekiston tarihi', count: '11 ta'),
                           ],
                           buildSection(
                             title: 'Matematika',
@@ -224,7 +244,7 @@ class _GeneralResultState extends State<GeneralResult> {
                               padding: const EdgeInsets.all(12),
                               child: Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     'Umumiy ball',
@@ -236,7 +256,7 @@ class _GeneralResultState extends State<GeneralResult> {
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                   Text(
-                                    '${_points.toStringAsFixed(2) ?? ''}',
+                                    '${_points.toStringAsFixed(2)}',
                                     style: TextStyle(
                                       fontSize: 14,
                                       color: Color(0xFF264CEB),
@@ -260,7 +280,7 @@ class _GeneralResultState extends State<GeneralResult> {
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => HomePage()),
-              (route) => false,
+                  (route) => false,
             );
           }),
           SizedBox(
@@ -271,4 +291,3 @@ class _GeneralResultState extends State<GeneralResult> {
     );
   }
 }
-// here update
