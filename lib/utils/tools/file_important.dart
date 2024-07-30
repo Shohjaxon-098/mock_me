@@ -46,7 +46,7 @@ export 'package:talaba_uz/ui/pages/home/tests/tests_page.dart';
 export 'package:talaba_uz/widget/oliygohlar.dart';
 export 'package:talaba_uz/ui/pages/home/university/university_page.dart';
 export 'package:shared_preferences/shared_preferences.dart';
-export 'package:talaba_uz/ui/pages/account/profile.dart';
+export 'package:talaba_uz/ui/pages/account/profile/profile.dart';
 export 'package:talaba_uz/ui/pages/chart/general_results.dart';
 export 'package:talaba_uz/ui/pages/chart/my_results.dart';
 export 'package:talaba_uz/ui/pages/chart/tab_item.dart';
@@ -55,4 +55,6 @@ export 'package:percent_indicator/linear_percent_indicator.dart';
 export 'dart:io';
 export 'package:image_picker/image_picker.dart';
 export 'package:google_sign_in/google_sign_in.dart';
-
+export 'package:talaba_uz/ui/pages/account/profile/date_widget.dart';
+export 'package:talaba_uz/ui/pages/account/profile/information.dart';
+export 'package:url_launcher/url_launcher.dart';

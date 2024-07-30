@@ -3,6 +3,8 @@
 import 'package:talaba_uz/ui/pages/account/newPass_first.dart';
 import 'package:talaba_uz/utils/tools/file_important.dart';
 
+import '../../../utils/url_launcher/url.dart';
+
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
 
@@ -227,6 +229,10 @@ class _AccountPageState extends State<AccountPage> {
                       child: Divider(),
                     ),
                     GestureDetector(
+                      onTap: () {
+                        Uri uri = Uri.parse("https://t.me/Mock_Meteam");
+                        launcher(uri);
+                      },
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24),
                         child: Row(

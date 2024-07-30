@@ -227,7 +227,7 @@ class _LoginPageState extends State<LoginPage> {
                         text: "Tizimga kirish",
                       ),
                 const SizedBox(
-                  height: 23,
+                  height: 15,
                 ),
                 TextButton(
                   onPressed: () {
@@ -246,51 +246,47 @@ class _LoginPageState extends State<LoginPage> {
                         color: blueColor),
                   ),
                 ),
-                const SizedBox(
-                  height: 50,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      height: 2,
-                      width: width(context) * 0.32,
-                      color: const Color(0xFFBFBFBF),
-                    ),
-                    const SizedBox(
-                      width: 20,
-                    ),
-                    Text(
-                      "OR",
-                      style: TextStyle(
-                        fontSize: 6 * devisePixel(context),
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xFFBFBFBF),
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 20,
-                    ),
-                    Container(
-                      height: 2,
-                      width: width(context) * 0.32,
-                      color: const Color(0xFFBFBFBF),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 35,
-            ),
-            Column(
-              children: [
-                WGoogleButton(
-                  onPressed: () {
-                    _signIn();
-                  },
-                  text: "Google bilan kirish",
-                ),
+                // const SizedBox(
+                //   height: 50,
+                // ),
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.center,
+                //   children: [
+                //     Container(
+                //       height: 2,
+                //       width: width(context) * 0.32,
+                //       color: const Color(0xFFBFBFBF),
+                //     ),
+                //     const SizedBox(
+                //       width: 20,
+                //     ),
+                //     Text(
+                //       "OR",
+                //       style: TextStyle(
+                //         fontSize: 6 * devisePixel(context),
+                //         fontWeight: FontWeight.w400,
+                //         color: Color(0xFFBFBFBF),
+                //       ),
+                //     ),
+                //     const SizedBox(
+                //       width: 20,
+                //     ),
+                //     Container(
+                //       height: 2,
+                //       width: width(context) * 0.32,
+                //       color: const Color(0xFFBFBFBF),
+                //     ),
+                //   ],
+                // ),
+                // const SizedBox(
+                //   height: 35,
+                // ),
+                // WGoogleButton(
+                //   onPressed: () {
+                //     _signIn();
+                //   },
+                //   text: "Google bilan kirish",
+                // ),
               ],
             ),
           ],

@@ -106,7 +106,6 @@ class _HomeState extends State<Home> {
         var responseData = response.data;
 
         // Print the response data to understand its structure
-        print('Response Data: $responseData');
 
         if (responseData is List && responseData.isNotEmpty) {
           // Process the list only if it is not empty
@@ -146,7 +145,7 @@ class _HomeState extends State<Home> {
       if (testId is Map<String, dynamic> && testId.containsKey('subject')) {
         var subject = testId['subject'];
 
-        if (subjectChoices is Map && subjectChoices.containsKey(subject)) {
+        if (subjectChoices.containsKey(subject)) {
           return "${subjectChoices[subject]} fanidan";
         }
       }

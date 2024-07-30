@@ -3,6 +3,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:talaba_uz/utils/tools/file_important.dart';
 
+import '../../../utils/url_launcher/url.dart';
+
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
 
@@ -48,6 +50,9 @@ class _SignUpPageState extends State<SignUpPage> {
 
   bool _emailValid = true;
   Timer? debounce;
+
+ 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -405,7 +410,9 @@ class _SignUpPageState extends State<SignUpPage> {
                             ),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
-                                // Handle tap on "Xizmatlar shartlari"
+                                Uri uri = Uri.parse(
+                                    "https://www.google.com/policies/terms/");
+                                launcher(uri);
                               },
                           ),
                           TextSpan(
@@ -425,7 +432,9 @@ class _SignUpPageState extends State<SignUpPage> {
                             ),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
-                                // Handle tap on "Maxfiylik siyosati"
+                                Uri uri = Uri.parse(
+                                    "https://www.google.com/policies/terms/");
+                                launcher(uri);
                               },
                           ),
                           TextSpan(
@@ -506,48 +515,45 @@ class _SignUpPageState extends State<SignUpPage> {
               const SizedBox(
                 height: 25,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    height: 2,
-                    width: 145,
-                    color: const Color(0xFFBFBFBF),
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Text(
-                    "OR",
-                    style: TextStyle(
-                      fontSize: 6 * devisePixel(context),
-                      fontWeight: FontWeight.w400,
-                      color: const Color(0xFFBFBFBF),
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Container(
-                    height: 2,
-                    width: 145,
-                    color: const Color(0xFFBFBFBF),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 25,
-              ),
-              WGoogleButton(
-                onPressed: () {},
-                text: "Google bilan kirish",
-              ),
-              const SizedBox(
-                height: 25,
-              ),
-              const SizedBox(
-                height: 50,
-              ),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.center,
+              //   children: [
+              //     Container(
+              //       height: 2,
+              //       width: 145,
+              //       color: const Color(0xFFBFBFBF),
+              //     ),
+              //     const SizedBox(
+              //       width: 10,
+              //     ),
+              //     Text(
+              //       "OR",
+              //       style: TextStyle(
+              //         fontSize: 6 * devisePixel(context),
+              //         fontWeight: FontWeight.w400,
+              //         color: const Color(0xFFBFBFBF),
+              //       ),
+              //     ),
+              //     const SizedBox(
+              //       width: 10,
+              //     ),
+              //     Container(
+              //       height: 2,
+              //       width: 145,
+              //       color: const Color(0xFFBFBFBF),
+              //     ),
+              //   ],
+              // ),
+              // const SizedBox(
+              //   height: 25,
+              // ),
+              // WGoogleButton(
+              //   onPressed: () {},
+              //   text: "Google bilan kirish",
+              // ),
+              // const SizedBox(
+              //   height: 25,
+              // ),
             ],
           ),
         ),

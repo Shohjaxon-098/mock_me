@@ -78,7 +78,7 @@ class TestWidget extends StatelessWidget {
                     ),
                     const Spacer(),
                     Text(
-                      "12",
+                      "90 ta",
                       style: TextStyle(
                         fontSize: 4 * devisePixel(context),
                         fontWeight: FontWeight.w600,
@@ -104,7 +104,7 @@ class TestWidget extends StatelessWidget {
                     ),
                     Spacer(),
                     Text(
-                      "90 Min",
+                      "3 soat",
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 4 * devisePixel(context),

@@ -1,3 +1,4 @@
+import 'package:talaba_uz/ui/pages/account/profile/profile_dialog.dart';
 import 'package:talaba_uz/utils/tools/file_important.dart';
 
 class Profile extends StatefulWidget {
@@ -29,18 +30,29 @@ class _ProfileState extends State<Profile> {
   String _selectedDate = '';
   Uint8List? _image;
   File? selectedImage;
-  // ignore: unused_element
-
+  bool readOnlyName = true;
+  bool readOnlySurname = true;
+  bool readOnlyRegion = true;
+  Dio _dio = Dio();
   @override
   void initState() {
     super.initState();
     _loadData();
   }
 
-  bool readOnlyName = true;
-  bool readOnlySurname = true;
-  bool readOnlyRegion = true;
-  Dio _dio = Dio();
+  // ignore: unused_element
+  Future<void> _navigateToProfile() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AccountPage(),
+      ),
+    );
+    if (result == true) {
+      _loadData(); // Reload the data after profile update
+    }
+  }
+
   Future<void> _loadData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -182,6 +194,23 @@ class _ProfileState extends State<Profile> {
     }
   }
 
+  Future<void> _pickImageFromGallery() async {
+    final ImagePicker _picker = ImagePicker();
+    try {
+      final XFile? returnImage =
+          await _picker.pickImage(source: ImageSource.gallery);
+      if (returnImage != null) {
+        final Uint8List imageBytes = await File(returnImage.path).readAsBytes();
+        setState(() {
+          selectedImage = File(returnImage.path);
+          _image = imageBytes;
+        });
+      }
+    } catch (e) {
+      print('Error picking image: $e');
+    }
+  }
+
   void _showDatePickerDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -193,9 +222,9 @@ class _ProfileState extends State<Profile> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _buildDateField(yearController, 'YYYY'),
-                _buildDateField(monthController, 'MM'),
-                _buildDateField(dayController, 'DD'),
+                buildDateField(yearController, 'YYYY'),
+                buildDateField(monthController, 'MM'),
+                buildDateField(dayController, 'DD'),
               ],
             ),
           ),
@@ -236,21 +265,81 @@ class _ProfileState extends State<Profile> {
     );
   }
 
-  Future<void> _pickImageFromGallery() async {
-    final ImagePicker _picker = ImagePicker();
-    try {
-      final XFile? returnImage =
-          await _picker.pickImage(source: ImageSource.gallery);
-      if (returnImage != null) {
-        final Uint8List imageBytes = await File(returnImage.path).readAsBytes();
-        setState(() {
-          selectedImage = File(returnImage.path);
-          _image = imageBytes;
-        });
-      }
-    } catch (e) {
-      print('Error picking image: $e');
-    }
+  void _showRegionDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text('Hududingizni tanlang'),
+              content: Container(
+                width: double.maxFinite,
+                height: height(context) / 2,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: regionList.length,
+                  itemBuilder: (context, index) {
+                    String region = regionList[index];
+                    final isSelected = region == selectedRegion;
+
+                    return ListTile(
+                      title: Text(
+                        region[0].toUpperCase() +
+                            region.substring(1).toLowerCase(),
+                      ),
+                      onTap: () {
+                        setState(() {
+                          selectedRegion = regionList[index];
+                        });
+                      },
+                      trailing: isSelected
+                          ? Icon(Icons.check, color: blueColor)
+                          : null,
+                    );
+                  },
+                ),
+              ),
+              actionsAlignment: MainAxisAlignment.center,
+              actions: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: SizedBox(
+                        width: width(context) / 3.3,
+                        child: WElevatedButton(
+                          text: Text(
+                            "Bekor qilish",
+                            style: TextStyle(color: whiteColor, fontSize: 12),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: width(context) / 3.3,
+                      child: WElevatedButton(
+                        onPressed: () {
+                          _updateRegion();
+                          Navigator.pop(context);
+                        },
+                        text: Text(
+                          "Saqlash",
+                          style: TextStyle(color: whiteColor, fontSize: 12),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -261,7 +350,7 @@ class _ProfileState extends State<Profile> {
         leadingWidth: 41,
         leading: GestureDetector(
           onTap: () {
-            Navigator.pop(context);
+            _navigateToProfile();
           },
           child: Padding(
             padding: const EdgeInsets.only(left: 25),
@@ -331,11 +420,11 @@ class _ProfileState extends State<Profile> {
                   suffixIcon: GestureDetector(
                     onTap: () {
                       setState(() {
-                        _showEditProfileDialog(
+                        showEditProfileDialog(
                             "Ismingizni kiriting", nameController, () {
                           _updateName();
                           Navigator.pop(context);
-                        });
+                        }, context);
                       });
                     },
                     child: Padding(
@@ -362,11 +451,11 @@ class _ProfileState extends State<Profile> {
                   suffixIcon: GestureDetector(
                     onTap: () {
                       setState(() {
-                        _showEditProfileDialog(
+                        showEditProfileDialog(
                             "Familiyangizni kiriting", surnameController, () {
                           _updateSurname();
                           Navigator.pop(context);
-                        });
+                        }, context);
                       });
                     },
                     child: Padding(
@@ -410,375 +499,16 @@ class _ProfileState extends State<Profile> {
                 const SizedBox(
                   height: 32,
                 ),
-                information(),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget information() {
-    return Container(
-      width: width(context) / 1.2,
-      height: height(context) / 3.6,
-      decoration: BoxDecoration(
-        color: whiteColor,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 24,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Qo’shimcha ma’lumotlar',
-            style: TextStyle(
-              fontSize: 5 * devisePixel(context),
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          Row(
-            children: [
-              Image.asset(
-                "assets/icons/mail.png",
-                width: 20,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Text(
-                  "Email",
-                  style: TextStyle(
-                    color: Colors.black45,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 4.5 * devisePixel(context),
-                  ),
-                ),
-              ),
-              const Spacer(),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Text(
-                  emailController.text,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 3.8 * devisePixel(context),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  setState(() {});
-                },
-                child: Image.asset(
-                  "assets/images/edit.png",
-                  width: 18,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 12,
-          ),
-          Row(
-            children: [
-              Image.asset(
-                "assets/icons/call.png",
-                width: 20,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Text(
-                  "Telefon raqam",
-                  style: TextStyle(
-                    color: Colors.black45,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 4.5 * devisePixel(context),
-                  ),
-                ),
-              ),
-              const Spacer(),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Text(
-                  "+998 ${phoneController.text}",
-                  style: TextStyle(
-                    fontSize: 3.8 * devisePixel(context),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  setState(() {});
-                },
-                child: Image.asset(
-                  "assets/images/edit.png",
-                  width: 18,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 12,
-          ),
-          Row(
-            children: [
-              Image.asset(
-                "assets/icons/calendar.png",
-                width: 20,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Text(
-                  "Tug’ilgan y,o,s",
-                  style: TextStyle(
-                    color: Colors.black45,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 4.5 * devisePixel(context),
-                  ),
-                ),
-              ),
-              const Spacer(),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Text(
-                  dateController.text,
-                  style: TextStyle(
-                    fontSize: 3.8 * devisePixel(context),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
+                information(context, emailController, dateController, () {
                   setState(() {
                     _showDatePickerDialog(context);
                   });
-                },
-                child: Image.asset(
-                  "assets/images/edit.png",
-                  width: 18,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 12,
-          ),
-          Row(
-            children: [
-              Image.asset(
-                "assets/icons/id.png",
-                width: 20,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Text(
-                  "ID",
-                  style: TextStyle(
-                    color: Colors.black45,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 3.8 * devisePixel(context),
-                  ),
-                ),
-              ),
-              const Spacer(),
-              Text(
-                "$userId",
-                style: TextStyle(
-                  fontSize: 4.5 * devisePixel(context),
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showEditProfileDialog(
-    String title,
-    TextEditingController controller,
-    Function? onPrassed,
-  ) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          surfaceTintColor: whiteColor,
-          backgroundColor: whiteColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          content: SizedBox(
-            height: height(context) * 0.09,
-            width: width(context),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 5 * devisePixel(context),
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                SizedBox(
-                  height: 40,
-                  child: TextField(
-                      controller: controller,
-                      decoration: InputDecoration(
-                        fillColor: backColor,
-                        filled: true,
-                        contentPadding: EdgeInsets.only(bottom: 10, left: 14),
-                        constraints: BoxConstraints(),
-                        prefixStyle: TextStyle(
-                          color: Colors.black87,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 5 * devisePixel(context),
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: Colors.blue),
-                        ),
-                      )),
-                ),
+                }, phoneController, userId),
               ],
             ),
           ),
-          actionsAlignment: MainAxisAlignment.center,
-          actions: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: SizedBox(
-                    width: width(context) / 3.3,
-                    child: WElevatedButton(
-                      text: Text(
-                        "Bekor qilish",
-                        style: TextStyle(color: whiteColor, fontSize: 12),
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  width: width(context) / 3.3,
-                  child: WElevatedButton(
-                    onPressed: onPrassed,
-                    text: Text(
-                      "Saqlash",
-                      style: TextStyle(color: whiteColor, fontSize: 12),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showRegionDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Hududingizni tanlang'),
-          content: Container(
-            width: double.maxFinite,
-            height: height(context) / 2,
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: regionList.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(regionList[index][0].toUpperCase() +
-                      regionList[index].substring(1).toLowerCase()),
-                  onTap: () {
-                    _updateRegion();
-                    Navigator.pop(context);
-                    setState(() {
-                      selectedRegion = regionList[index];
-                    });
-                  },
-                  trailing: selectedRegion == regionList[index]
-                      ? Icon(Icons.check, color: blueColor)
-                      : null,
-                );
-              },
-            ),
-          ),
-          actionsAlignment: MainAxisAlignment.center,
-          actions: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: SizedBox(
-                    width: width(context) / 3.3,
-                    child: WElevatedButton(
-                      text: Text(
-                        "Bekor qilish",
-                        style: TextStyle(color: whiteColor, fontSize: 12),
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  width: width(context) / 3.3,
-                  child: WElevatedButton(
-                    onPressed: () {
-                      _updateRegion();
-                      Navigator.pop(context);
-                    },
-                    text: Text(
-                      "Saqlash",
-                      style: TextStyle(color: whiteColor, fontSize: 12),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-Widget _buildDateField(TextEditingController controller, String hint) {
-  return Container(
-    width: 73,
-    child: TextField(
-      controller: controller,
-      textAlign: TextAlign.center,
-      decoration: InputDecoration(
-        hintText: hint,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
         ),
       ),
-      keyboardType: TextInputType.number,
-    ),
-  );
+    );
+  }
 }
