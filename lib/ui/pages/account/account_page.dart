@@ -199,6 +199,10 @@ class _AccountPageState extends State<AccountPage> {
                       child: Divider(),
                     ),
                     GestureDetector(
+                      onTap: () {
+                        Uri uri = Uri.parse("https://t.me/Mock_Meteam");
+                        launcher(uri);
+                      },
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24),
                         child: Row(
@@ -230,7 +234,7 @@ class _AccountPageState extends State<AccountPage> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        Uri uri = Uri.parse("https://t.me/Mock_Meteam");
+                        Uri uri = Uri.parse("t.me/contact_mockmebot");
                         launcher(uri);
                       },
                       child: Padding(
