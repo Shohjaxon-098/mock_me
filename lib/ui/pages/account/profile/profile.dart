@@ -1,9 +1,16 @@
 import 'package:talaba_uz/ui/pages/account/profile/profile_dialog.dart';
 import 'package:talaba_uz/utils/tools/file_important.dart';
 
+// ignore: must_be_immutable
 class Profile extends StatefulWidget {
-  const Profile({super.key});
-
+  Profile(
+      {super.key,
+      required this.email,
+      required this.name,
+      required this.surname});
+  String email;
+  String name;
+  String surname;
   @override
   State<Profile> createState() => _ProfileState();
 }
@@ -18,9 +25,7 @@ class _ProfileState extends State<Profile> {
   final TextEditingController dayController = TextEditingController();
   final TextEditingController monthController = TextEditingController();
   final TextEditingController yearController = TextEditingController();
-  String email = '';
-  String name = '';
-  String surname = '';
+
   String region = '';
   String phone = '';
   String date = '';
@@ -41,34 +46,24 @@ class _ProfileState extends State<Profile> {
   }
 
   // ignore: unused_element
-  Future<void> _navigateToProfile() async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => AccountPage(),
-      ),
-    );
-    if (result == true) {
-      _loadData(); // Reload the data after profile update
-    }
+  void _navigateToProfile() {
+    Navigator.pop(context);
   }
 
   Future<void> _loadData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      email = prefs.getString('email') ??
-          email; // If userId is null, use empty string as default value
-      name = prefs.getString('name') ?? name;
-      surname = prefs.getString('surname') ?? surname;
+      widget.email = prefs.getString('email') ?? widget.email;
+      widget.name = prefs.getString('name') ?? widget.name;
+      widget.surname = prefs.getString('surname') ?? widget.surname;
       region = prefs.getString('region') ?? region;
       phone = prefs.getString('phone_number') ?? phone;
       date = prefs.getString('birth') ?? date;
       userId = prefs.getInt('id') ?? userId;
 
-      nameController.text = name;
-      surnameController.text = surname;
-      nameController.text = name;
-      emailController.text = email;
+      nameController.text = widget.name;
+      surnameController.text = widget.surname;
+      emailController.text = widget.email;
       phoneController.text = phone;
       dateController.text = date;
       regionController.text = region;

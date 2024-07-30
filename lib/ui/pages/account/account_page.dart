@@ -118,7 +118,11 @@ class _AccountPageState extends State<AccountPage> {
                         Navigator.push(
                             context,
                             PageTransition(
-                                child: const Profile(),
+                                child: Profile(
+                                  email: email,
+                                  name: name,
+                                  surname: surname,
+                                ),
                                 type: PageTransitionType.rightToLeft));
                       },
                       child: Padding(

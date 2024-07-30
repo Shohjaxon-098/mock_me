@@ -13,6 +13,16 @@ class DtmTestModelOriginal {
     required this.subjecttest,
   });
 
+
+
+
+
+
+
+
+
+
+
   factory DtmTestModelOriginal.fromJson(Map<String, dynamic> json) {
     return DtmTestModelOriginal(
       dtmtestCode: json['dtmtest_code'] ?? '',
