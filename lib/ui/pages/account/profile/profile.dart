@@ -29,16 +29,15 @@ class _ProfileState extends State<Profile> {
   String region = '';
   String phone = '';
   String date = '';
-  String image = '';
   int userId = 0;
   String selectedRegion = '';
   String _selectedDate = '';
-  Uint8List? _image;
-  File? selectedImage;
+  File? _imageFile;
   bool readOnlyName = true;
   bool readOnlySurname = true;
   bool readOnlyRegion = true;
   Dio _dio = Dio();
+
   @override
   void initState() {
     super.initState();
@@ -189,21 +188,54 @@ class _ProfileState extends State<Profile> {
     }
   }
 
-  Future<void> _pickImageFromGallery() async {
-    final ImagePicker _picker = ImagePicker();
+  Future<void> updateAccountWithImage(int id, File imageFile) async {
+    Dio dio = Dio();
+    String url = '$baseUrl/accounts/update/$userId/';
+
     try {
-      final XFile? returnImage =
-          await _picker.pickImage(source: ImageSource.gallery);
-      if (returnImage != null) {
-        final Uint8List imageBytes = await File(returnImage.path).readAsBytes();
-        setState(() {
-          selectedImage = File(returnImage.path);
-          _image = imageBytes;
-        });
+      FormData formData = FormData.fromMap({
+        'image': await MultipartFile.fromFile(
+          imageFile.path,
+          filename: imageFile.path.split('/').last,
+        ),
+      });
+
+      final response = await dio.patch(
+        url,
+        data: formData,
+        options: Options(
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          validateStatus: (status) =>
+              status! < 500, // Allow responses with status codes less than 500
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        print('Account image updated successfully');
+      } else {
+        print(
+            'Failed to update account image: ${response.statusCode} ${response.statusMessage}');
       }
     } catch (e) {
-      print('Error picking image: $e');
+      print('Error: $e');
     }
+  }
+
+  Future<File?> _pickImage() async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? pickedImage =
+        await _picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedImage != null) {
+      setState(() {
+        _imageFile = File(pickedImage.path);
+      });
+    } else {
+      print('No image selected');
+    }
+    return null;
   }
 
   void _showDatePickerDialog(BuildContext context) {
@@ -337,6 +369,15 @@ class _ProfileState extends State<Profile> {
     );
   }
 
+  void onUpdateAccountImage() async {
+    File? imageFile = await _pickImage();
+    if (imageFile != null) {
+      updateAccountWithImage(1, imageFile); // Replace 1 with the actual user ID
+    } else {
+      print('No image selected');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -377,10 +418,15 @@ class _ProfileState extends State<Profile> {
                 Stack(
                   alignment: Alignment.bottomRight,
                   children: [
-                    _image != null
+                    _imageFile != null
                         ? CircleAvatar(
                             radius: 40,
-                            backgroundImage: MemoryImage(_image!),
+                            backgroundImage: _imageFile != null
+                                ? FileImage(_imageFile!)
+                                : null,
+                            child: _imageFile == null
+                                ? Icon(Icons.person, size: 50)
+                                : null,
                           )
                         : CircleAvatar(
                             radius: 40,
@@ -395,7 +441,7 @@ class _ProfileState extends State<Profile> {
                       ),
                       child: InkWell(
                           onTap: () {
-                            _pickImageFromGallery();
+                            onUpdateAccountImage();
                           },
                           child: Image.asset("assets/images/camera.png")),
                     ),

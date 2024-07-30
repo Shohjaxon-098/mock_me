@@ -274,24 +274,4 @@ class ApiService extends ApiClient {
       return null;
     }
   }
-
-  Future<Map<String, dynamic>> getAccount(String userId) async {
-    try {
-      Response response =
-          await dio.get('$baseUrl/api/v1/accounts/update/$userId/');
-
-      // Check response status
-      if (response.statusCode == 200) {
-        return response.data;
-      } else {
-        print('Failed to load data. Status code: ${response.statusCode}');
-        return response.data;
-      }
-    } catch (e) {
-      // Handle any errors that occurred during the process
-      print('Error: $e');
-      // ignore: null_check_always_fails
-      return null!;
-    }
-  }
 }
