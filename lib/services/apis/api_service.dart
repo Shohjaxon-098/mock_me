@@ -276,4 +276,41 @@ class ApiService extends ApiClient {
   }
 
   resultTestDtm(int studentId, String testCode, double point, String date) {}
+
+
+
+
+  Future<bool> resultId(String id) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      // Check if the result ID is cached
+      String? cachedId = prefs.getString('resultId');
+      if (cachedId == id) {
+        // If cached ID matches the requested ID, return true
+        return true;
+      }
+
+      // Make API request to fetch the result
+      Response response = await dio.get(
+        '$baseUrl/api/v1/dtmtests/result/$id',
+      );
+
+      if (response.statusCode == 200) {
+        // If API request is successful, cache the ID
+        await prefs.setString('resultId', id);
+        return true;
+      } else {
+        // If API request fails
+        return false;
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching result ID: $e');
+      }
+      return false;
+    }
+  }
 }
+
+
