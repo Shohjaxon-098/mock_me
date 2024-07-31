@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:talaba_uz/services/apis/api_service.dart';
@@ -312,6 +314,12 @@ class _DiagnosticTestState extends State<DiagnosticTest> {
 
           SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setDouble('point', point);
+          await prefs.setString('test_code', widget.dtmTestCode);
+
+          String specialTestsJson = jsonEncode(result.specialTests);
+          await prefs.setString('special_tests', specialTestsJson);
+
+
 
           Navigator.pushAndRemoveUntil(
             context,

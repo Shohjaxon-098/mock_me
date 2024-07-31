@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:talaba_uz/ui/pages/diagnost/general_result/custom_button_pattern.dart';
 
+import '../../../../services/model/responses/dtm_test_code.dart';
 import '../../../../services/model/responses/result_dtm_model.dart';
 import '../../../../utils/tools/file_important.dart';
 import 'build_section.dart';
@@ -13,66 +16,68 @@ class GeneralResult extends StatefulWidget {
 class _GeneralResultState extends State<GeneralResult> {
   bool isExpanded = false;
   ResultDtmModel? resultDtmModel;
-  final Dio _dio = Dio();
   bool isLoading = true;
   String errorMessage = '';
 
   double _points = 0.0;
-  String? _resultMessage;
   String _testCode = '';
   String variant = '';
+  int? remainingTime;
+  String name = '';
+
+
 
   @override
   void initState() {
     super.initState();
-    fetchResult(_testCode);
-    _loadTestCode(); // Initialize testCode and fetch result here
+    fetchResult();
+    _loadDtmTestCode(); // Initialize testCode and fetch result here
     _loadPoints();
+     loadRemainingTime();
+    _loadName();
   }
 
-  // Future<void> _loadTestCode() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   setState(() {
-  //     testCode = prefs.getString('testCode') ?? '';
-  //     print('Loaded testCode: $testCode'); // Debugging line
-  //     if (testCode != null && testCode!.isNotEmpty) {
-  //       fetchResult();
-  //     }
-  //   });
-  // }
 
-  Future<void> fetchResult(String testCode) async {
-    try {
-      final response = await _dio.post(
-        '$baseUrl/api/v1/dtmtests/result/',
-        data: {"test_code": testCode},
+  Future<void> fetchResult() async {
+  setState(() {
+    isLoading = true;
+  });
+
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  int studentId = prefs.getInt('student_id') ?? 0;
+  String testCode = prefs.getString('test_code') ?? '';
+  double point = prefs.getDouble('point') ?? 0.0;
+  String date = prefs.getString('date') ?? '';
+
+  bool isResultFetched = await ApiService().resultTestDtm(
+      studentId,
+      testCode,
+      point,
+      date
+  );
+
+  if(isResultFetched){
+    setState(() {
+      _testCode = testCode;
+      _points = point;
+      resultDtmModel = ResultDtmModel(
+          studentId: studentId,
+          testCode: testCode,
+          point: point,
+          date: date
       );
-
-      // Log response status and data for debugging
-      print('Response status: ${response.statusCode}');
-      print('Response data: ${response.data}');
-
-      if (response.statusCode == 200) {
-        setState(() {
-          resultDtmModel = ResultDtmModel.fromJson(response.data);
-          _resultMessage = 'Test Results Submitted Successfully';
-          isLoading = false;
-        });
-      } else {
-        setState(() {
-          errorMessage = 'Failed to load data. Status code: ${response.statusCode} - ${response.statusMessage}';
-          isLoading = false;
-        });
-        print('Failed to load data. Status code: ${response.statusCode}');
-        print('Error response: ${response.data}');
-      }
-    } catch (e) {
-      setState(() {
-        errorMessage = 'Error: $e';
-        isLoading = false;
-      });
-      print('Error: $e');
-    }
+      isLoading = false;
+    });
+  } else {
+    setState(() {
+      isLoading = false;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Xatolik bor. Ko`rib chiqing"),
+      ),
+    );
+  }
   }
 
   Future<void> _loadPoints() async {
@@ -82,15 +87,34 @@ class _GeneralResultState extends State<GeneralResult> {
     });
   }
 
-  Future<void> _loadTestCode() async {
+  Future<void> _loadName() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      _testCode = prefs.getString('testCode') ?? ''; // Retrieve the string value
-      print('Loaded testCode: $_testCode'); // Debugging line
-      if(_testCode.isNotEmpty){
-        fetchResult(_testCode);
-      }
+      name = prefs.getString('name') ?? '';
     });
+  }
+
+  Future<void> _loadDtmTestCode() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _testCode = prefs.getString('test_code') ?? '';
+    });
+  }
+
+
+
+  Future<void> loadRemainingTime() async {
+    final prefs = await SharedPreferences.getInstance();
+    final time = prefs.getInt('remainingTime'); // Get the saved remaining time
+    setState(() {
+      remainingTime = time; // Update the state with the retrieved time
+    });
+  }
+
+  String formatTime(int seconds) {
+    int hours = seconds ~/ 3600;
+    int minutes = (seconds % 3600) ~/ 60;
+    return "$hours soat ${minutes} minut";
   }
 
   void toggleExpanded() {
@@ -146,7 +170,7 @@ class _GeneralResultState extends State<GeneralResult> {
                             Row(
                               children: [
                                 Text(
-                                  'Yo’nalish:',
+                                  'Sarflangan vaqt:',
                                   textAlign: TextAlign.left,
                                   style: TextStyle(
                                     fontSize: 12,
@@ -158,7 +182,7 @@ class _GeneralResultState extends State<GeneralResult> {
                                 ),
                                 SizedBox(width: 8),
                                 Text(
-                                  'Aniq fanlar (iqtisod)',
+                                  '${formatTime(remainingTime!)}',
                                   textAlign: TextAlign.left,
                                   style: TextStyle(
                                     fontSize: 12,
@@ -211,27 +235,25 @@ class _GeneralResultState extends State<GeneralResult> {
                       child: Column(
                         children: [
                           buildSection(
-                            title: 'Majburiy fanlar',
-                            count: '35 ta',
+                            title: 'Majburiy Fanlar',
+                            count: '30 ta',
                             iconClosed: Icons.chevron_right,
                             iconOpened: Icons.expand_more,
                             isExpanded: isExpanded,
                             onTap: toggleExpanded,
                           ),
                           if (isExpanded) ...[
+                            buildSubject(title: 'O\'zbekiston tarihi', count: '10 ta'),
+                            buildSubject(title: 'Matematika', count: '10 ta'),
                             buildSubject(title: 'Ona tili', count: '10 ta'),
-                            buildSubject(title: 'Matematika', count: '14 ta'),
-                            buildSubject(title: 'O\'zbekiston tarihi', count: '11 ta'),
                           ],
-                          buildSection(
+                          buildSecondSection(
                             title: 'Matematika',
-                            count: '28 ta',
-                            isExpanded: false,
+                            count: '30 ta',
                           ),
-                          buildSection(
+                          buildSecondSection(
                             title: 'Xorijiy til',
                             count: '30 ta',
-                            isExpanded: false,
                           ),
                           SizedBox(height: 16),
                           DecoratedBox(

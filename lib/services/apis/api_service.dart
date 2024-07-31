@@ -274,4 +274,57 @@ class ApiService extends ApiClient {
       return null;
     }
   }
+
+  Future<bool> resultTestDtm(int studentId, String testCode, double point, String date) async {
+    try{
+      Response response = await dio.post(
+        '$baseUrl/api/v1/dtmtests/result',
+        data: {
+          'student_id': studentId,
+          'test_code': testCode,
+          'point': point,
+          'date': date,
+        }
+      );
+
+      if(response.statusCode == 200){
+        // Successful response, handle the response and save to SharedPreferences
+        print('Result submission success: ${response.data}');
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+
+        // Assuming the response contains data related to the test result
+        int? receivedStudentId = response.data['student_id'];
+        String? receivedTestCode = response.data['test_code'];
+        double? receivedPoint = response.data['point'];
+        String? receivedDate = response.data['date'];
+
+        prefs.setInt('student_id', receivedStudentId ?? studentId);
+        prefs.setString('test_code', receivedTestCode ?? testCode);
+        prefs.setDouble('point', receivedPoint ?? point);
+        prefs.setString('date', receivedDate ?? date);
+
+        return true;
+      }else {
+        // Unsuccessful response, handle specific error cases
+        print('Error Status Code: ${response.statusCode}');
+        print('Error Body: ${response.data}');
+        return false;
+      }
+    } on DioError catch (e){
+      // Handle Dio errors with specific information
+      if(e.response != null){
+        // The request was made, but the server responded with a non-successful status code
+        print('Dio Error Status Code: ${e.response?.statusCode}');
+        print('Dio Error Response Data: ${e.response?.data}');
+        print('Dio Error Headers: ${e.response?.headers}');
+      } else {
+        // The request was made but no response was received or an error occurred during the request setup
+        print('Dio Error: ${e.message}');
+      } return false;
+    }  catch (e) {
+      // Handle any other types of errors
+      print('Error: $e');
+      return false;
+    }
+  }
 }

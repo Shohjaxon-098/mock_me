@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'time_painter.dart';
 
@@ -21,11 +22,17 @@ class _TimerWidgetState extends State<TimerWidget> {
     startTimer();
   }
 
+  Future<void> saveRemainingTime(int remainingTime) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('remainingTime', remainingTime);
+  }
+
   void startTimer() {
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (remainingTime > 0) {
         setState(() {
           remainingTime--;
+          saveRemainingTime(remainingTime);
         });
       } else {
         timer.cancel();
@@ -68,7 +75,8 @@ class _TimerWidgetState extends State<TimerWidget> {
             painter: TimePainter(
               timerColor: getTimerColor(),
               totalTime: totalTime,
-              remainingTime: remainingTime,
+              remainingTime: remainingTime ,
+
             ),
           ),
         ),

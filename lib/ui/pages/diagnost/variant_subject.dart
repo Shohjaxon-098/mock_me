@@ -32,6 +32,9 @@ class _VariantSubjectState extends State<VariantSubject> {
         setState(() {
           _subjects = subjects;
         });
+
+
+
       } else {
         print('Failed to fetch data: ${response.statusCode}');
       }
@@ -44,16 +47,19 @@ class _VariantSubjectState extends State<VariantSubject> {
   void initState() {
     super.initState();
     testFetching(widget.directionCode);
+    saveName();
   }
 
 
-
-  Future<void> _saveTestCode(String testCode) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('testCode', testCode);
+  Future<void> saveName() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('name', widget.name);
   }
+
+
 
   @override
+
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFFEFEEFC),
@@ -122,19 +128,6 @@ class _VariantSubjectState extends State<VariantSubject> {
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          '${test.spSubjeccttest.first} - 30 ta',
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                            color: Color(0xFF080317),
-                            fontSize: 12,
-                            fontFamily: 'Inter-Bold',
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
                           '${test.spSubjeccttest} - 30 ta',
                           textAlign: TextAlign.start,
                           style: TextStyle(
@@ -149,6 +142,19 @@ class _VariantSubjectState extends State<VariantSubject> {
                         alignment: Alignment.centerLeft,
                         child: Text(
                           '${test.subjecttest.first} - 30 ta',
+                          textAlign: TextAlign.start,
+                          style: TextStyle(
+                            color: Color(0xFF080317),
+                            fontSize: 12,
+                            fontFamily: 'Inter-Bold',
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          '${test.subjecttest.last} - 30 ta',
                           style: TextStyle(
                             color: Color(0xFF080317),
                             fontSize: 12,
@@ -183,4 +189,5 @@ class _VariantSubjectState extends State<VariantSubject> {
       ),
     );
   }
+
 }
