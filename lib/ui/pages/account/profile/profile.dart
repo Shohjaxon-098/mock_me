@@ -42,6 +42,7 @@ class _ProfileState extends State<Profile> {
   void initState() {
     super.initState();
     _loadData();
+    _loadImage();
   }
 
   // ignore: unused_element
@@ -188,15 +189,25 @@ class _ProfileState extends State<Profile> {
     }
   }
 
-  Future<void> updateAccountWithImage(int id, File imageFile) async {
+  Future<void> updateAccountWithImage() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // Rasm yo'li mavjudligini tekshirish
+    final String? imagePath = prefs.getString('image');
+
+    if (imagePath == null) {
+      print('No image file found in SharedPreferences');
+      return;
+    }
+
     Dio dio = Dio();
-    String url = '$baseUrl/accounts/update/$userId/';
+    String url = '$baseUrl/api/v1/accounts/update/$userId/';
 
     try {
       FormData formData = FormData.fromMap({
         'image': await MultipartFile.fromFile(
-          imageFile.path,
-          filename: imageFile.path.split('/').last,
+          imagePath,
+          filename: imagePath.split('/').last,
         ),
       });
 
@@ -223,19 +234,36 @@ class _ProfileState extends State<Profile> {
     }
   }
 
-  Future<File?> _pickImage() async {
+  Future<void> _pickAndSaveImage() async {
     final ImagePicker _picker = ImagePicker();
     final XFile? pickedImage =
         await _picker.pickImage(source: ImageSource.gallery);
 
     if (pickedImage != null) {
-      setState(() {
-        _imageFile = File(pickedImage.path);
-      });
+      try {
+        // Application documents directory
+        final Directory appDocDir = await getApplicationDocumentsDirectory();
+        final String appDocPath = appDocDir.path;
+
+        // Create a file path for the image
+        final String fileName = pickedImage.name;
+        final String localImagePath = '$appDocPath/$fileName';
+
+        // Save the image
+        final File localImageFile =
+            await File(pickedImage.path).copy(localImagePath);
+
+        print('Image saved to: $localImagePath');
+
+        // Save the image path to SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('image', localImagePath);
+      } catch (e) {
+        print('Error saving image: $e');
+      }
     } else {
       print('No image selected');
     }
-    return null;
   }
 
   void _showDatePickerDialog(BuildContext context) {
@@ -369,12 +397,13 @@ class _ProfileState extends State<Profile> {
     );
   }
 
-  void onUpdateAccountImage() async {
-    File? imageFile = await _pickImage();
-    if (imageFile != null) {
-      updateAccountWithImage(1, imageFile); // Replace 1 with the actual user ID
-    } else {
-      print('No image selected');
+  Future<void> _loadImage() async {
+    final prefs = await SharedPreferences.getInstance();
+    final imagePath = prefs.getString('image');
+    if (imagePath != null) {
+      setState(() {
+        _imageFile = File(imagePath);
+      });
     }
   }
 
@@ -418,18 +447,19 @@ class _ProfileState extends State<Profile> {
                 Stack(
                   alignment: Alignment.bottomRight,
                   children: [
-                    _imageFile != null
+                    _imageFile == null
                         ? CircleAvatar(
                             radius: 40,
-                            backgroundImage: _imageFile != null
-                                ? FileImage(_imageFile!)
-                                : null,
                             child: _imageFile == null
-                                ? Icon(Icons.person, size: 50)
+                                ? Icon(Icons.person, size: 100)
                                 : null,
                           )
                         : CircleAvatar(
                             radius: 40,
+                            backgroundImage: FileImage(_imageFile!),
+                            child: _imageFile == null
+                                ? Icon(Icons.person, size: 100)
+                                : null,
                           ),
                     Container(
                       width: 25,
@@ -441,7 +471,10 @@ class _ProfileState extends State<Profile> {
                       ),
                       child: InkWell(
                           onTap: () {
-                            onUpdateAccountImage();
+                            setState(() {
+                              _loadImage();
+                              _pickAndSaveImage();
+                            });
                           },
                           child: Image.asset("assets/images/camera.png")),
                     ),

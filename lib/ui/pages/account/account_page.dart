@@ -21,6 +21,18 @@ class _AccountPageState extends State<AccountPage> {
   void initState() {
     super.initState();
     _loadData();
+    _loadImage();
+  }
+
+  File? _imageFile;
+  Future<void> _loadImage() async {
+    final prefs = await SharedPreferences.getInstance();
+    final imagePath = prefs.getString('image');
+    if (imagePath != null) {
+      setState(() {
+        _imageFile = File(imagePath);
+      });
+    }
   }
 
   Future<void> _loadData() async {
@@ -68,9 +80,17 @@ class _AccountPageState extends State<AccountPage> {
                 children: [
                   Row(
                     children: [
-                      const CircleAvatar(
-                        radius: 18,
-                      ),
+                      _imageFile == null
+                          ? CircleAvatar(
+                              radius: 18,
+                            )
+                          : CircleAvatar(
+                              radius: 18,
+                              backgroundImage: FileImage(_imageFile!),
+                              child: _imageFile == null
+                                  ? Icon(Icons.person, size: 100)
+                                  : null,
+                            ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Column(
