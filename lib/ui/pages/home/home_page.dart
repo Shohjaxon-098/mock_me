@@ -1,10 +1,7 @@
 // ignore_for_file: avoid_print
 
+
 import 'package:talaba_uz/utils/tools/file_important.dart';
-
-import '../../../services/model/responses/dtm_direction/dtm_direction.dart';
-import '../diagnost/variant_subject.dart';
-
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 

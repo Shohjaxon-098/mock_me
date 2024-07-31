@@ -274,4 +274,6 @@ class ApiService extends ApiClient {
       return null;
     }
   }
+
+  resultTestDtm(int studentId, String testCode, double point, String date) {}
 }

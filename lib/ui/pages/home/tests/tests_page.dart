@@ -1,5 +1,3 @@
-import 'package:talaba_uz/services/model/responses/dtm_direction/dtm_direction.dart';
-import 'package:talaba_uz/ui/pages/diagnost/variant_subject.dart';
 import '../../../../utils/tools/file_important.dart';
 
 class Tests extends StatefulWidget {

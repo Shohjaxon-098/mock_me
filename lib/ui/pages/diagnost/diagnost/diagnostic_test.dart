@@ -1,15 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:talaba_uz/services/apis/api_service.dart';
-
-import 'package:talaba_uz/ui/pages/diagnost/finish_button/finish_button.dart';
-import 'package:talaba_uz/ui/pages/diagnost/general_result/general_result.dart';
-import 'package:talaba_uz/ui/pages/diagnost/menu_widget/menu_widget.dart';
-import 'package:talaba_uz/ui/pages/diagnost/page_navigation/page_navigation_widget.dart';
-import 'package:talaba_uz/ui/pages/diagnost/test_card/test_card.dart';
-
-import '../../../services/model/responses/dtm_test_code.dart';
 
 
+import 'package:talaba_uz/services/model/responses/dtm_test_code.dart';
+import 'package:talaba_uz/ui/pages/diagnost/diagnost/page_navigation/page_navigation_widget.dart';
+
+import '../../../../utils/tools/file_important.dart';
 class DiagnosticTest extends StatefulWidget {
   final String dtmTestCode;
 
@@ -43,8 +37,8 @@ class _DiagnosticTestState extends State<DiagnosticTest> {
 
     if (data != null) {
       setState(() {
-        specialTests = data.specialTests;
-        subjectTests = data.subjectTests;
+        specialTests = data.specialTests.cast<SpecialTests>();
+        subjectTests = data.subjectTests.cast<SubjectTests>();
         totalSections = specialTests.length + subjectTests.length;
         eachSubject = [
           ...specialTests.map((test) => test.specialQuestion.subjectCode),
@@ -306,8 +300,18 @@ class _DiagnosticTestState extends State<DiagnosticTest> {
 
       if (result != null) {
         if (mounted) {
-          double correctAnswers = _calculateCorrectAnswers();
-          print('Total Correct Answers: $correctAnswers');
+          double point = _calculateCorrectAnswers(); // receive
+          print('Total Correct Answers: $point');
+
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setDouble('point', point);
+          await prefs.setString('test_code', widget.dtmTestCode);
+
+          String specialTestsJson = jsonEncode(result.specialTests);
+          await prefs.setString('special_tests', specialTestsJson);
+
+
+
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(

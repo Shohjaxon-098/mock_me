@@ -1,7 +1,5 @@
-import 'package:flutter/material.dart';
 
-import '../swipe_button/swipe_button.dart';
-import '../timer_widget.dart';
+import '../../../../../utils/tools/file_important.dart';
 
 class PageNavigationWidget extends StatelessWidget {
   final PageController pageController;

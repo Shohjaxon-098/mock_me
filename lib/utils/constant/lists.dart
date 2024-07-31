@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_typing_uninitialized_variables
 
+
 import 'package:talaba_uz/utils/tools/file_important.dart';
 
 List<String> regionList = [

@@ -1,10 +1,4 @@
-import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:talaba_uz/services/baseUrl_data.dart';
-import 'package:talaba_uz/ui/pages/diagnost/start_button/start_button.dart';
-
-import '../../../services/model/responses/dtm_test_model_original.dart';
-import 'diagnostic_test.dart';
+import '../../../../utils/tools/file_important.dart';
 
 class VariantSubject extends StatefulWidget {
   final String directionCode;
@@ -31,6 +25,9 @@ class _VariantSubjectState extends State<VariantSubject> {
         setState(() {
           _subjects = subjects;
         });
+
+
+
       } else {
         print('Failed to fetch data: ${response.statusCode}');
       }
@@ -45,7 +42,13 @@ class _VariantSubjectState extends State<VariantSubject> {
     testFetching(widget.directionCode);
   }
 
+
+
+
+
+
   @override
+
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFFEFEEFC),
@@ -85,7 +88,7 @@ class _VariantSubjectState extends State<VariantSubject> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Variant: ${test.dtmtestCode}',
+                            'Variant: ${test.dtmtestCode}',// here
                             style: TextStyle(
                               color: Color(0xFF264CEC),
                               fontSize: 16,
@@ -114,19 +117,6 @@ class _VariantSubjectState extends State<VariantSubject> {
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          '${test.spSubjeccttest.first} - 30 ta',
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                            color: Color(0xFF080317),
-                            fontSize: 12,
-                            fontFamily: 'Inter-Bold',
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
                           '${test.spSubjeccttest} - 30 ta',
                           textAlign: TextAlign.start,
                           style: TextStyle(
@@ -141,6 +131,19 @@ class _VariantSubjectState extends State<VariantSubject> {
                         alignment: Alignment.centerLeft,
                         child: Text(
                           '${test.subjecttest.first} - 30 ta',
+                          textAlign: TextAlign.start,
+                          style: TextStyle(
+                            color: Color(0xFF080317),
+                            fontSize: 12,
+                            fontFamily: 'Inter-Bold',
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          '${test.subjecttest.last} - 30 ta',
                           style: TextStyle(
                             color: Color(0xFF080317),
                             fontSize: 12,
@@ -175,4 +178,5 @@ class _VariantSubjectState extends State<VariantSubject> {
       ),
     );
   }
+
 }

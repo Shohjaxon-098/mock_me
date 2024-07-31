@@ -1,7 +1,8 @@
 // ignore_for_file: use_full_hex_values_for_flutter_colors
 
-import 'package:talaba_uz/ui/pages/diagnost/dtm_test.dart';
 import 'package:talaba_uz/utils/tools/file_important.dart';
+
+
 
 class DiagnostPage extends StatefulWidget {
   const DiagnostPage({super.key});
@@ -17,6 +18,7 @@ class _DiagnostPageState extends State<DiagnostPage> {
   @override
   void initState() {
     startTimer();
+    fetchAndSetTests();
     super.initState();
   }
 
@@ -55,8 +57,38 @@ class _DiagnostPageState extends State<DiagnostPage> {
     "assets/images/qorako`l-mak.png",
     "assets/images/milliy-sertifikat.png",
   ];
+  List<DtmDirection> dtmDirections = [];
+  final Dio _dio = Dio();
+  bool isLoading = true;
   int _currentPageTest = 0;
   int _currentPageLang = 0;
+
+
+  Future<void> fetchAndSetTests() async {
+    try {
+      List<DtmDirection> directions = await fetchTests();
+      setState(() {
+        dtmDirections = directions;
+        isLoading = false;
+      });
+    } catch (e) {
+      print('Error: $e');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<List<DtmDirection>> fetchTests() async {
+    Response response = await _dio.get("$baseUrl/api/v1/dtmtests/directions/");
+
+    if (response.statusCode == 200) {
+      List<dynamic> jsonList = response.data;
+      return jsonList.map((json) => DtmDirection.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to fetch data: ${response.statusCode}');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -434,12 +466,12 @@ class _DiagnostPageState extends State<DiagnostPage> {
   }
 
   Widget blockTest() {
+    if (isLoading) {
+      return Center(child: CircularProgressIndicator());
+    }
+
     return CarouselSlider(
-      items: [
-        1,
-        2,
-        3,
-      ].map((e) {
+      items: dtmDirections.map((direction) {
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
@@ -447,55 +479,15 @@ class _DiagnostPageState extends State<DiagnostPage> {
               width: width(context) * 0.4,
               height: height(context),
               decoration: BoxDecoration(
-                  color: whiteColor, borderRadius: BorderRadius.circular(8)),
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Column(
-                  children: [
-                    Text(
-                      "Aniq fanlar(Texnika)",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 4 * devisePixel(context),
-                      ),
-                    ),
-                    const Spacer(),
-                    SizedBox(
-                      width: width(context) * 0.26,
-                      height: 24,
-                      child: WElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            PageTransition(
-                              child: const DtmTests(),
-                              type: PageTransitionType.rightToLeft,
-                            ),
-                          );
-                        },
-                        text: Text(
-                          "Batafsil",
-                          style: TextStyle(
-                              color: whiteColor,
-                              fontSize: 4 * devisePixel(context),
-                              letterSpacing: 0.7),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                color: whiteColor,
+                borderRadius: BorderRadius.circular(8),
               ),
-            ),
-            Container(
-              width: width(context) * 0.4,
-              decoration: BoxDecoration(
-                  color: whiteColor, borderRadius: BorderRadius.circular(8)),
               child: Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: Column(
                   children: [
                     Text(
-                      "Aniq fanlar(Iqtisod)",
+                      direction.name ?? 'Nomalum fan', // Assuming 'name' is a field in DtmDirection
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 4 * devisePixel(context),
@@ -518,9 +510,10 @@ class _DiagnostPageState extends State<DiagnostPage> {
                         text: Text(
                           "Batafsil",
                           style: TextStyle(
-                              color: whiteColor,
-                              fontSize: 4 * devisePixel(context),
-                              letterSpacing: 0.7),
+                            color: whiteColor,
+                            fontSize: 4 * devisePixel(context),
+                            letterSpacing: 0.7,
+                          ),
                         ),
                       ),
                     ),
@@ -532,7 +525,7 @@ class _DiagnostPageState extends State<DiagnostPage> {
         );
       }).toList(),
       options: CarouselOptions(
-        initialPage: _currentPageLang,
+        initialPage: _currentPageTest,
         padEnds: false,
         viewportFraction: 1.05,
         height: 100,

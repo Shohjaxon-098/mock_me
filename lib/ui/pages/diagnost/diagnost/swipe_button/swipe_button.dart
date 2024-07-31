@@ -1,5 +1,6 @@
 
-import '../../../../utils/tools/file_important.dart';
+import 'package:talaba_uz/utils/tools/file_important.dart';
+
 
 class SwipeButton extends StatelessWidget {
   final String activeIconPath;
