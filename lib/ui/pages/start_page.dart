@@ -30,8 +30,8 @@ class StartPage extends StatelessWidget {
                   flex: 2,
                   child: Column(
                     children: [
-                      SvgPicture.asset(
-                        "assets/icons/splash_mock.svg",
+                      Image.asset(
+                        "assets/images/splash_logo.png",
                         width: 54,
                       ),
                       Text(

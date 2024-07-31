@@ -21,7 +21,6 @@ export 'package:hive/hive.dart';
 export 'package:path_provider/path_provider.dart';
 export 'package:talaba_uz/ui/pages/login/login_page.dart';
 export 'package:talaba_uz/utils/constant/assistants.dart';
-export 'package:talaba_uz/ui/pages/onboarding/onboarding_page.dart';
 export 'dart:async';
 export 'package:talaba_uz/ui/splash/splash_screen.dart';
 export 'package:talaba_uz/widget/wElewetedButTransparent.dart';
