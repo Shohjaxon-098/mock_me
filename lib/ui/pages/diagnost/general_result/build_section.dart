@@ -113,6 +113,39 @@ Widget buildSection({
   );
 }
 
+Widget buildSubject({required String title, required String count}) {
+
+
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 12),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 12,
+            color: Color(0xFF1E1E1E),
+            fontWeight: FontWeight.normal,
+          ),
+          overflow: TextOverflow.ellipsis,
+        ),
+        Text(
+          count,
+          textAlign: TextAlign.right,
+          style: TextStyle(
+            fontSize: 12,
+            color: Color(0xFF1E1E1E),
+            fontWeight: FontWeight.bold,
+          ),
+          overflow: TextOverflow.ellipsis,
+        )
+      ],
+    ),
+  );
+}
+
+
 Widget buildSecondSection({
   required String title,
   required String count,
@@ -150,36 +183,6 @@ Widget buildSecondSection({
           ),
         ],
       ),
-    ),
-  );
-}
-
-Widget buildSubject({required String title, required String count}) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 12),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: 12,
-            color: Color(0xFF1E1E1E),
-            fontWeight: FontWeight.normal,
-          ),
-          overflow: TextOverflow.ellipsis,
-        ),
-        Text(
-          count,
-          textAlign: TextAlign.right,
-          style: TextStyle(
-            fontSize: 12,
-            color: Color(0xFF1E1E1E),
-            fontWeight: FontWeight.bold,
-          ),
-          overflow: TextOverflow.ellipsis,
-        )
-      ],
     ),
   );
 }

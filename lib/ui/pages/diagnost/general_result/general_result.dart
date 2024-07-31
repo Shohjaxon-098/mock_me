@@ -34,7 +34,6 @@ class _GeneralResultState extends State<GeneralResult> {
     _loadDtmTestCode(); // Initialize testCode and fetch result here
     _loadPoints();
      loadRemainingTime();
-    _loadName();
   }
 
 
@@ -87,12 +86,6 @@ class _GeneralResultState extends State<GeneralResult> {
     });
   }
 
-  Future<void> _loadName() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      name = prefs.getString('name') ?? '';
-    });
-  }
 
   Future<void> _loadDtmTestCode() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

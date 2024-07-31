@@ -47,14 +47,10 @@ class _VariantSubjectState extends State<VariantSubject> {
   void initState() {
     super.initState();
     testFetching(widget.directionCode);
-    saveName();
   }
 
 
-  Future<void> saveName() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('name', widget.name);
-  }
+
 
 
 
