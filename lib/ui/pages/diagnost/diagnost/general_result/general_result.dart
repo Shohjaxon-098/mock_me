@@ -361,3 +361,5 @@ class _GeneralResultState extends State<GeneralResult> {
     );
   }
 }
+
+// need to send them

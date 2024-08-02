@@ -93,7 +93,7 @@ Widget buildSection({
                 size: 24,
               ),
             ),
-          SizedBox(width: 10),
+          SizedBox(width: 10), //
           Spacer(),// Add some space between icon and count
           Text(
             count,
