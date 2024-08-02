@@ -451,14 +451,22 @@ class _ProfileState extends State<Profile> {
                         ? CircleAvatar(
                             radius: 40,
                             child: _imageFile == null
-                                ? Icon(Icons.person, size: 100)
+                                ? Icon(
+                                    Icons.person,
+                                    size: 50,
+                                    color: blueColor,
+                                  )
                                 : null,
                           )
                         : CircleAvatar(
                             radius: 40,
                             backgroundImage: FileImage(_imageFile!),
                             child: _imageFile == null
-                                ? Icon(Icons.person, size: 100)
+                                ? Icon(
+                                    Icons.person,
+                                    size: 50,
+                                    color: blueColor,
+                                  )
                                 : null,
                           ),
                     Container(

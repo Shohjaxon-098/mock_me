@@ -83,12 +83,23 @@ class _AccountPageState extends State<AccountPage> {
                       _imageFile == null
                           ? CircleAvatar(
                               radius: 18,
+                              child: _imageFile == null
+                                  ? Icon(
+                                      Icons.person,
+                                      size: 50,
+                                      color: blueColor,
+                                    )
+                                  : null,
                             )
                           : CircleAvatar(
                               radius: 18,
                               backgroundImage: FileImage(_imageFile!),
                               child: _imageFile == null
-                                  ? Icon(Icons.person, size: 100)
+                                  ? Icon(
+                                      Icons.person,
+                                      size: 50,
+                                      color: blueColor,
+                                    )
                                   : null,
                             ),
                       Padding(
