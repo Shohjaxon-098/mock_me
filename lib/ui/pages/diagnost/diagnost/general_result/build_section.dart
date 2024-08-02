@@ -55,6 +55,7 @@ Widget buildSectionTitle({
   );
 }
 
+
 Widget buildSection({
   required String title,
   required String count,
@@ -64,7 +65,7 @@ Widget buildSection({
   IconData? iconOpened,
 }) {
   final IconData currentIcon = isExpanded
-      ? (iconOpened ?? Icons.expand_more) // Default path for expanded
+      ? (iconOpened ?? Icons.expand_more)
       : (iconClosed ?? Icons.chevron_right);
 
   return Padding(
@@ -74,18 +75,16 @@ Widget buildSection({
       height: 24,
       child: Row(
         children: [
-          Expanded(
-              child: Column(children: [
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 14,
-                color: Color(0xFF1E1E1E),
-                fontWeight: FontWeight.normal,
-              ),
-              overflow: TextOverflow.ellipsis,
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 14,
+              color: Color(0xFF1E1E1E),
+              fontWeight: FontWeight.normal,
             ),
-          ])),
+            overflow: TextOverflow.ellipsis,
+          ),
+
           if (iconClosed != null && iconOpened != null)
             InkWell(
               onTap: onTap,
@@ -94,9 +93,8 @@ Widget buildSection({
                 size: 24,
               ),
             ),
-          SizedBox(
-            width: iconClosed != null && iconOpened != null ? 165 : 0,
-          ),
+          SizedBox(width: 10),
+          Spacer(),// Add some space between icon and count
           Text(
             count,
             textAlign: TextAlign.right,
@@ -112,6 +110,65 @@ Widget buildSection({
     ),
   );
 }
+
+
+
+// Widget buildSection({
+//   required String title,
+//   required String count,
+//   required bool isExpanded,
+//   VoidCallback? onTap,
+//   IconData? iconClosed,
+//   IconData? iconOpened,
+// }) {
+//   final IconData currentIcon = isExpanded
+//       ? (iconOpened ?? Icons.expand_more) // Default path for expanded
+//       : (iconClosed ?? Icons.chevron_right);
+//
+//   return Padding(
+//     padding: EdgeInsets.only(bottom: 12, ),
+//     child: SizedBox(
+//       width: double.infinity,
+//       height: 24,
+//       child: Row(
+//         children: [
+//           Column(children: [
+//           Text(
+//           title,
+//           style: TextStyle(
+//             fontSize: 14,
+//             color: Color(0xFF1E1E1E),
+//             fontWeight: FontWeight.normal,
+//           ),
+//           overflow: TextOverflow.ellipsis,
+//                       ),
+//                     ]),
+//           if (iconClosed != null && iconOpened != null)
+//             InkWell(
+//               onTap: onTap,
+//               child: Icon(
+//                 currentIcon,
+//                 size: 24,
+//               ),
+//             ),
+//           SizedBox(
+//             width: iconClosed != null && iconOpened != null ? 165 : 0,
+//           ),
+//           Text(
+//             count,
+//             textAlign: TextAlign.right,
+//             style: TextStyle(
+//               fontSize: 14,
+//               color: Color(0xFF1E1E1E),
+//               fontWeight: FontWeight.bold,
+//             ),
+//             overflow: TextOverflow.ellipsis,
+//           ),
+//         ],
+//       ),
+//     ),
+//   );
+// }
 
 Widget buildSubject({required String title, required String count}) {
 

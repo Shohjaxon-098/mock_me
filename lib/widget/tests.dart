@@ -125,7 +125,7 @@ class TestWidget extends StatelessWidget {
                     "Boshlash",
                     style: TextStyle(
                       color: whiteColor,
-                      fontSize: 4.5 * devisePixel(context),
+                      fontSize: 4 * devisePixel(context),
                     ),
                   ),
                 ),
