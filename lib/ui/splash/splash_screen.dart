@@ -20,7 +20,7 @@ class _SplashScreenState extends State<SplashScreen> {
               builder: (_) =>
                   auth.get("token", defaultValue: '').toString().isNotEmpty
                       ? const HomePage()
-                      : const OnBoardingPage(),
+                      : const StartPage(),
             ),
             (route) => false));
     super.initState();
@@ -49,8 +49,8 @@ class _SplashScreenState extends State<SplashScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SvgPicture.asset(
-                "assets/icons/splash_mock.svg",
+              Image.asset(
+                "assets/images/splash_logo.png",
                 width: width(context) * 0.22,
               ),
               Text(
