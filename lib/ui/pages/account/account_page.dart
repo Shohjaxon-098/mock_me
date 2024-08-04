@@ -86,7 +86,7 @@ class _AccountPageState extends State<AccountPage> {
                               child: _imageFile == null
                                   ? Icon(
                                       Icons.person,
-                                      size: 50,
+                                      size: 20,
                                       color: blueColor,
                                     )
                                   : null,
@@ -97,7 +97,7 @@ class _AccountPageState extends State<AccountPage> {
                               child: _imageFile == null
                                   ? Icon(
                                       Icons.person,
-                                      size: 50,
+                                      size: 20,
                                       color: blueColor,
                                     )
                                   : null,

@@ -51,8 +51,6 @@ class _SignUpPageState extends State<SignUpPage> {
   bool _emailValid = true;
   Timer? debounce;
 
- 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -228,7 +226,9 @@ class _SignUpPageState extends State<SignUpPage> {
                 readOnly: false,
                 keyboardType: TextInputType.emailAddress,
                 obscureText: false,
-                errorText: _emailValid ? null : 'Please enter a valid email',
+                errorText: _emailValid
+                    ? null
+                    : 'Yaroqli elektron pochta manzilini kiriting',
                 onChanged: (String value) {
                   if (debounce?.isActive ?? false) debounce?.cancel();
                   debounce = Timer(const Duration(milliseconds: 500), () {
@@ -280,7 +280,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 hintText: "Parol",
                 errorText: passwordController.text.isNotEmpty &&
                         passwordController.text.length < 8
-                    ? 'Password must be at least 8 characters'
+                    ? 'Parol kamida 8 ta belgidan iborat bo`lishi kerak'
                     : null,
                 suffixIconConstraints: const BoxConstraints(),
                 suffixIcon: Padding(
@@ -328,7 +328,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 errorText: confirmPasswordController.text.isNotEmpty &&
                         confirmPasswordController.text !=
                             passwordController.text
-                    ? 'Passwords do not match'
+                    ? 'Parollar mos kelmaydi'
                     : null,
                 onChanged: (value) {
                   confirmPasswordController.text = value;
