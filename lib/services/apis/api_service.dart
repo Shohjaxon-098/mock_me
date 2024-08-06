@@ -310,7 +310,36 @@ class ApiService extends ApiClient {
       }
       return false;
     }
+  }  Future<Map<String, dynamic>> fetchUserData(int userId) async {
+    Dio dio = Dio();
+    try {
+      final response =
+          await dio.get('$baseUrl/api/v1/accounts/update/${userId}/');
+      if (response.statusCode == 200) {
+        return response.data;
+      } else {
+        throw Exception(
+            'Failed to load data with status code: ${response.statusCode}');
+      }
+    } on DioException catch (e) {
+      if (e.response != null) {
+        print('Dio error!');
+        print('STATUS: ${e.response?.statusCode}');
+        print('DATA: ${e.response?.data}');
+        print('HEADERS: ${e.response?.headers}');
+        throw Exception(
+            'Failed to load data with status code: ${e.response?.statusCode}. Data: ${e.response?.data}');
+      } else {
+        print('Error sending request!');
+        print(e.message);
+        throw Exception('Error sending request: ${e.message}');
+      }
+    } catch (e) {
+      print(e);
+      throw e;
+    }
   }
+
 }
 
 

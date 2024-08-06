@@ -1,4 +1,5 @@
 import '../../../../utils/tools/file_important.dart';
+
 class DtmTests extends StatefulWidget {
   const DtmTests({super.key});
 
@@ -52,84 +53,83 @@ class _DtmTestsState extends State<DtmTests> {
         title: Text(
           "DTM testlar",
           style: TextStyle(
-            fontSize: 6 * devisePixel(context),
-            fontWeight: FontWeight.w600,
-            fontFamily: 'Inter-SemiBold'
-          ),
+              fontSize: 6 * devisePixel(context),
+              fontWeight: FontWeight.w600,
+              fontFamily: 'Inter-SemiBold'),
         ),
         backgroundColor: Colors.transparent,
       ),
       body: isLoading
           ? const Center(
-        child: CircularProgressIndicator.adaptive(),
-      )
+              child: CircularProgressIndicator.adaptive(),
+            )
           : Padding(
-        padding: const EdgeInsets.only(top: 25, left: 24, right: 24),
-        child: SizedBox(
-          width: width(context),
-          height: height(context),
-          child: GridView.builder(
-            itemCount: dtmDirections.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              childAspectRatio: 5 / 3.2,
-              crossAxisCount: 2,
-              mainAxisSpacing: 30,
-              crossAxisSpacing: 30,
-            ),
-            itemBuilder: (context, index) {
-              final direction = dtmDirections[index];
-              return Container(
-                decoration: BoxDecoration(
-                  color: whiteColor,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                      top: 20, bottom: 20, right: 21, left: 21),
-                  child: Column(
-                    children: [
-                      Text(
-                        direction.name ?? "Nomalum fan",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: devisePixel(context) * 4.5,
-                          fontFamily: 'Inter-SemiBold'
-                        ),
-                      ),
-                      const Spacer(),
-                      SizedBox(
-                        width: width(context) * 0.312,
-                        height: 24,
-                        child: WElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => VariantSubject(
-                               directionCode: direction.id.toString(),
-                               name: direction.name,
-                              )),
-                            );
-                          },
-                          text: Text(
-                            "Boshlash",
-                            style: TextStyle(
-                                color: whiteColor,
-                                fontSize: devisePixel(context) * 3.5,
-                                letterSpacing: 0.7,
-                                fontFamily: 'Inter-Medium',
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+              padding: const EdgeInsets.only(top: 25, left: 24, right: 24),
+              child: SizedBox(
+                width: width(context),
+                height: height(context),
+                child: GridView.builder(
+                  itemCount: dtmDirections.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    childAspectRatio: 6 / 4,
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 14,
                   ),
+                  itemBuilder: (context, index) {
+                    final direction = dtmDirections[index];
+                    return Container(
+                      decoration: BoxDecoration(
+                        color: whiteColor,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                            top: 20, bottom: 20, right: 21, left: 21),
+                        child: Column(
+                          children: [
+                            Text(
+                              direction.name ?? "Nomalum fan",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: devisePixel(context) * 4,
+                                  fontFamily: 'Inter-SemiBold'),
+                            ),
+                            const Spacer(),
+                            SizedBox(
+                              width: width(context) * 0.312,
+                              height: 24,
+                              child: WElevatedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => VariantSubject(
+                                              directionCode:
+                                                  direction.id.toString(),
+                                              name: direction.name,
+                                            )),
+                                  );
+                                },
+                                text: Text(
+                                  "Boshlash",
+                                  style: TextStyle(
+                                    color: whiteColor,
+                                    fontSize: devisePixel(context) * 3.5,
+                                    letterSpacing: 0.7,
+                                    fontFamily: 'Inter-Medium',
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                  physics: const NeverScrollableScrollPhysics(),
                 ),
-              );
-            },
-            physics: const NeverScrollableScrollPhysics(),
-          ),
-        ),
-      ),
+              ),
+            ),
     );
   }
 }
