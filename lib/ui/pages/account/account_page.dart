@@ -75,10 +75,11 @@ class _AccountPageState extends State<AccountPage> {
       ),
       body: RefreshIndicator(
         color: blueColor,
+        displacement: 3,
         onRefresh: _refreshData,
         child: SingleChildScrollView(
           child: SizedBox(
-            height: height(context) / 1.2,
+            height: height(context) / 1.1,
             child: Column(
               children: [
                 Container(
