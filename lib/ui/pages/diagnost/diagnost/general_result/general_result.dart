@@ -1,4 +1,6 @@
 
+import 'package:talaba_uz/ui/pages/diagnost/diagnost/loading_patterns/result_loading_pattern.dart';
+
 import '../../../../../utils/tools/file_important.dart';
 import 'build_section.dart';
 
@@ -14,8 +16,13 @@ class _GeneralResultState extends State<GeneralResult> {
   bool isLoading = true;
   String errorMessage = '';
 
-  double _points = 0.0;
-  String _testCode = '';
+  int? studentId;
+  String? testCode;
+  double? points;
+  String? currentLocalDate;
+
+  final ApiService apiService = ApiService();
+
   int? remainingTime;
   int nationalHistory = 0;
   int mathSpSubject = 0;
@@ -23,133 +30,69 @@ class _GeneralResultState extends State<GeneralResult> {
   int mathSubject = 0;
   int englishSubject = 0;
   int spSubjectPoints = 0;
-  @override
-  void initState() {
-    super.initState();
-    fetchResult();
-    _loadDtmTestCode(); // Initialize testCode and fetch result here
-    _loadPoints();
-    loadRemainingTime();
-    _loadSpHistory();
-    _loadSpMathPoints();
-    _loadSpMotherPoints();
-    _loadMathSubject();
-    _loadEnglishSubject();
-    _loadSpSubjectPoint();
-  }
 
-  Future<void> fetchResult() async {
-    setState(() {
-      isLoading = true;
-    });
 
-    try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      int studentId = prefs.getInt('student_id') ?? 0;
-      String testCode = prefs.getString('test_code') ?? '';
-      double point = prefs.getDouble('point') ?? 0.0;
-      String date = prefs.getString('date') ?? '';
+  Future<void> _fetchData() async {
+    var box = Hive.box('auth');
+    studentId = box.get('student_id');
+    testCode = box.get('test_code');
+    points = box.get('point');
+    currentLocalDate = box.get('date');
 
-      bool isResultFetched = await ApiService().resultTestDtm(
-        studentId,
-        testCode,
-        point,
-        date,
+    // Retrieve subject points from Hive
+    nationalHistory = box.get('O\'zbekiston tarixi', defaultValue: 0);
+    mathSpSubject = box.get('Matematika Majburiy', defaultValue: 0);
+    motherLangSubject = box.get('Ona tili', defaultValue: 0);
+    mathSubject = box.get('Matematika', defaultValue: 0);
+    englishSubject = box.get('Xorijiy Til', defaultValue: 0);
+    spSubjectPoints = box.get('Majburiy Fanlar', defaultValue: 0);
+
+    // Fetch results from API
+    // Ensure no null values are passed to the API
+    if (studentId != null && testCode != null && points != null && currentLocalDate != null) {
+      print('One or more values are null: studentId=$studentId, testCode=$testCode, points=$points, currentLocalDate=$currentLocalDate');
+      print('Retrieved studentId: $studentId');
+      // Fetch results from API
+      final result = await apiService.resultOfTest(
+        studentId!,
+        testCode!,
+        points!,
+        currentLocalDate!,
       );
 
-      if (isResultFetched) {
+      if (result != null) {
         setState(() {
-          _testCode = testCode;
-          _points = point;
-          resultDtmModel = ResultDtmModel(
-            studentId: studentId,
-            testCode: testCode,
-            point: point,
-            date: date,
-          );
+          studentId = result['student_id'];
+          testCode = result['test_code'];
+          points = result['point'];
+          currentLocalDate = result['date'];
           isLoading = false;
         });
       } else {
         setState(() {
           isLoading = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Xatolik bor. Ko`rib chiqing"),
-          ),
-        );
       }
-    } catch (e) {
+    } else {
+      // Handle the case where one or more values are null
+      print('One or more values are null: studentId=$studentId, testCode=$testCode, points=$points, currentLocalDate=$currentLocalDate');
       setState(() {
         isLoading = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Xatolik: $e"),
-        ),
-      );
     }
   }
 
-  Future<void> _loadPoints() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _points = prefs.getDouble('point') ?? 0.0;
-    });
+
+
+
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchData();
+    loadRemainingTime();
   }
 
-
-  Future<void> _loadSpMotherPoints() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      motherLangSubject = prefs.getInt('Ona tili') ?? 0;
-    });
-  }
-
-  Future<void> _loadSpMathPoints() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      mathSpSubject = prefs.getInt('Matematika Majburiy') ?? 0;
-    });
-  }
-
-  Future<void> _loadSpHistory() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      nationalHistory = prefs.getInt('O\'zbekiston tarixi') ?? 0;
-    });
-  }
-
-  Future<void> _loadMathSubject() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      mathSubject = prefs.getInt('Matematika') ?? 0;
-    });
-  }
-
-  Future<void> _loadEnglishSubject() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      englishSubject = prefs.getInt('Xorijiy Til') ?? 0;
-    });
-  }
-
-  Future<void> _loadSpSubjectPoint() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      spSubjectPoints = prefs.getInt('Majburiy Fanlar') ?? 0;
-
-    });
-  }
-
-
-
-  Future<void> _loadDtmTestCode() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _testCode = prefs.getString('test_code') ?? '';
-    });
-  }
 
   Future<void> loadRemainingTime() async {
     final prefs = await SharedPreferences.getInstance();
@@ -187,7 +130,7 @@ class _GeneralResultState extends State<GeneralResult> {
         centerTitle: true,
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator.adaptive(),)
+          ? ResultLoadingPattern()
           : Column(
         children: [
           Expanded(
@@ -204,7 +147,7 @@ class _GeneralResultState extends State<GeneralResult> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Test raqami: #${_testCode}',
+                            'Test raqami: #${testCode}',
                             textAlign: TextAlign.left,
                             style: TextStyle(
                               fontSize: 16,
@@ -326,7 +269,7 @@ class _GeneralResultState extends State<GeneralResult> {
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                   Text(
-                                    '${_points.toStringAsFixed(2)}',
+                                    '${points}',
                                     style: TextStyle(
                                       fontSize: 14,
                                       color: Color(0xFF264CEB),

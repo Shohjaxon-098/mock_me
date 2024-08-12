@@ -2,6 +2,22 @@ import '../../../../utils/tools/file_important.dart';
 import 'build_section_chart.dart';
 
 class ResultCard extends StatefulWidget {
+  final int spSubjectPoint;
+  final int mathPoint;
+  final int englishPoints;
+  final String date;
+  final double point;
+  final String testCode;
+
+  ResultCard({
+    required this.spSubjectPoint,
+    required this.mathPoint,
+    required this.englishPoints,
+    required this.date,
+    required this.point,
+    required this.testCode,
+  });
+
   @override
   _ResultCardState createState() => _ResultCardState();
 }
@@ -37,7 +53,7 @@ class _ResultCardState extends State<ResultCard> {
           child: Column(
             children: [
               buildSectionTitle(
-                title: 'Majburiy Fanlar',
+                title: 'Variant ${widget.testCode}',
                 isExpanded: _isExpanded,
                 onTap: _toggleExpanded,
                 iconClosed: Icons.chevron_right,
@@ -45,11 +61,11 @@ class _ResultCardState extends State<ResultCard> {
               ),
               if (_isExpanded) ...[
                 buildSubject(title: 'Majburiy Fanlar',
-                    count: '$majburiyFanlarPoints ta'),
+                    count: '${widget.spSubjectPoint} ta'),
                 buildSubject(
-                    title: 'Matematika', count: '$matematikaPoints ta'),
+                    title: 'Matematika', count: '${widget.mathPoint} ta'),
                 buildSubject(
-                    title: 'Xorijiy til', count: '$xorijiyTilPoints ta'),
+                    title: 'Xorijiy til', count: '${widget.englishPoints} ta'),
               ],
               SizedBox(height: 16),
               Row(
@@ -58,15 +74,17 @@ class _ResultCardState extends State<ResultCard> {
                   Text(
                     'Test sanasi:',
                     style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.black,
+                        fontSize: 12,
+                        color: Colors.black,
+                        fontFamily: 'Inter-Medium'
                     ),
                   ),
                   Text(
-                    '12.07.2024',
+                    '${widget.date}',
                     style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.black,
+                        fontSize: 12,
+                        color: Colors.black,
+                        fontFamily: 'Inter-Medium'
                     ),
                   ),
                 ],
@@ -74,7 +92,7 @@ class _ResultCardState extends State<ResultCard> {
               SizedBox(height: 16),
               buildSecondSection(
                 title: 'Umumiy ball',
-                count: '$totalPoints',
+                count: '${widget.point}',
               ),
             ],
           ),

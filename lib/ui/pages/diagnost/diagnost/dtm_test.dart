@@ -1,4 +1,5 @@
 import '../../../../utils/tools/file_important.dart';
+import 'loading_patterns/dtm_tests_loading.dart';
 
 class DtmTests extends StatefulWidget {
   const DtmTests({super.key});
@@ -60,9 +61,7 @@ class _DtmTestsState extends State<DtmTests> {
         backgroundColor: Colors.transparent,
       ),
       body: isLoading
-          ? const Center(
-              child: CircularProgressIndicator.adaptive(),
-            )
+          ? DtmTestsLoading()
           : Padding(
               padding: const EdgeInsets.only(top: 25, left: 24, right: 24),
               child: SizedBox(

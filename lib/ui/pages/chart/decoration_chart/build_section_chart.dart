@@ -29,6 +29,7 @@ Widget buildSectionTitle({
                   fontSize: 14,
                   color: Color(0xFF1E1E1E),
                   fontWeight: FontWeight.normal,
+                  fontFamily: 'Inter-SemiBold',
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -64,9 +65,9 @@ Widget buildSubject({required String title, required String count}) {
         Text(
           title,
           style: TextStyle(
-            fontSize: 12,
-            color: Color(0xFF1E1E1E),
-            fontWeight: FontWeight.normal,
+              fontSize: 12,
+              color: Color(0xFF1E1E1E),
+              fontFamily: 'Inter-Medium'
           ),
           overflow: TextOverflow.ellipsis,
         ),
@@ -74,9 +75,9 @@ Widget buildSubject({required String title, required String count}) {
           count,
           textAlign: TextAlign.right,
           style: TextStyle(
-            fontSize: 12,
-            color: Color(0xFF1E1E1E),
-            fontWeight: FontWeight.bold,
+              fontSize: 12,
+              color: Color(0xFF1E1E1E),
+              fontFamily: 'Inter-Medium'
           ),
           overflow: TextOverflow.ellipsis,
         ),
@@ -101,24 +102,40 @@ Widget buildSecondSection({
               Text(
                 title,
                 style: TextStyle(
-                  fontSize: 14,
-                  color: Color(0xFF1E1E1E),
-                  fontWeight: FontWeight.normal,
+                    fontSize: 12,
+                    color: Color(0xFF1E1E1E),
+                    fontFamily: 'Inter-SemiBold'
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
           Spacer(),
-          Text(
-            count,
-            textAlign: TextAlign.right,
-            style: TextStyle(
-              fontSize: 14,
-              color: Color(0xFF1E1E1E),
-              fontWeight: FontWeight.bold,
+          SizedBox(
+            width: 76,
+            height: 27,
+
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: Color(0xFF264CEC),
+                    width: 1,
+                  )
+              ),
+              child: Center(
+                child: Text(
+                  count,
+                  textAlign: TextAlign.right,
+                  style: TextStyle(
+                      fontSize: 16,
+                      color: Color(0xFF264CEC),
+                      fontFamily: 'Inter-SemiBold'
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
             ),
-            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),

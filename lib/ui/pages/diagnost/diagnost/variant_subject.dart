@@ -1,3 +1,5 @@
+import 'package:talaba_uz/ui/pages/diagnost/diagnost/loading_patterns/variant_loading.dart';
+
 import '../../../../utils/tools/file_important.dart';
 
 class VariantSubject extends StatefulWidget {
@@ -66,7 +68,7 @@ class _VariantSubjectState extends State<VariantSubject> {
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: _subjects.isEmpty
-            ? const Center(child: CircularProgressIndicator.adaptive())
+            ? VariantLoading()
             : ListView.separated(
           itemCount: _subjects.length,
           itemBuilder: (BuildContext context, int index) {

@@ -22,6 +22,7 @@ class _AccountPageState extends State<AccountPage> {
     super.initState();
     _loadData();
     _loadImage();
+    _pickAndSaveImage();
   }
 
   File? _imageFile;
@@ -48,6 +49,17 @@ class _AccountPageState extends State<AccountPage> {
   Future<void> _refreshData() async {
     await _loadData();
     await _loadImage();
+  }
+
+  Future<void> _pickAndSaveImage() async {
+    // Your existing code to pick and save image
+    final prefs = await SharedPreferences.getInstance();
+    final imagePath = _imageFile?.path;
+    if (imagePath != null) {
+      await prefs.setString('image', imagePath);
+      var box = await Hive.openBox('auth');
+      box.put('image_path', imagePath);  // Save path to Hive
+    }
   }
 
   @override

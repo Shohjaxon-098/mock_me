@@ -27,6 +27,28 @@ class ApiService extends ApiClient {
       if (response.statusCode == 200) {
         var auth = Hive.box('auth');
         auth.put("token", response.data["access_token"]);
+
+        int? studentId = response.data['id'];
+        if (studentId != null) {
+          auth.put('student_id', studentId);
+          print("Student ID saved in Hive: $studentId");
+        } else {
+          print("Student ID is null in response");
+        }
+
+        String? idUser = response.data['id'].toString();
+        auth.put('user_id', idUser);
+        print("User ID saved in Hive: $idUser");
+
+        String? firstName = response.data['name'].toString();
+        auth.put('name', firstName);
+        print("User\'s name has been saved in Hive: $firstName");
+
+        String? lastName = response.data['surname'].toString();
+        auth.put('surname', lastName);
+        print("User\'s lastName has been saved in Hive");
+
+
         // Successful registration
         print("SignUp success: ${response.data}");
         SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -137,6 +159,29 @@ class ApiService extends ApiClient {
       if (response.statusCode == 200) {
         var auth = Hive.box('auth');
         auth.put("token", response.data["access_token"]);
+
+        int? studentId = response.data['id'];
+        if (studentId != null) {
+          auth.put('student_id', studentId);
+          print("Student ID saved in Hive: $studentId");
+        } else {
+          print("Student ID is null in response");
+          return null;
+        }
+
+        String? idUser = response.data['id'].toString(); // Convert to String
+        auth.put('user_id', idUser);
+        print("User ID saved in Hive: $idUser");
+
+        String? firstName = response.data['name'].toString();
+        auth.put('name', firstName);
+        print("User\'s name has been saved in Hive: $firstName");
+
+        String? lastName = response.data['surname'].toString();
+        auth.put('surname', lastName);
+        print("User\'s lastName has been saved in Hive");
+
+
         // Login successful, save user id to SharedPreferences
         SharedPreferences prefs = await SharedPreferences.getInstance();
         int userId = response.data['id'];
@@ -339,6 +384,44 @@ class ApiService extends ApiClient {
       throw e;
     }
   }
+
+
+
+  Future<Map<String, dynamic>?> resultOfTest(int studentId, String testCode, double point, String date) async {
+    try {
+      // Make POST request to API
+      Response response = await dio.post(
+        '$baseUrl/api/v1/dtmtests/result/',
+        data: {
+          "student_id": studentId,
+          "test_code": testCode,
+          "point": point,
+          "date": date,
+        },
+
+
+      );
+
+      if (response.statusCode == 201) {
+        print("Data: ${response.data}");
+        // Return data from Result
+        return {
+          'student_id': studentId,
+          'test_code': testCode,
+          'point': point,
+          'date': date,
+        };
+      } else {
+        print('Error: ${response.statusCode} - ${response.data}');
+        return null;
+      }
+    } catch (e) {
+      print('Error: $e');
+      return null;
+    }
+  }
+
+
 
 }
 

@@ -1,4 +1,5 @@
 import 'package:talaba_uz/ui/pages/chart/decoration_chart/result_card_chart.dart';
+import 'package:talaba_uz/ui/pages/chart/loading_pattern/my_result_loading.dart';
 
 import '../../../utils/tools/file_important.dart';
 import 'model/result_id_model.dart';
@@ -9,43 +10,91 @@ class MyResults extends StatefulWidget {
   @override
   State<MyResults> createState() => _MyResultsState();
 }
-
 class _MyResultsState extends State<MyResults> {
+  String? userId;
+  final Dio _dio = Dio();
+  List<ResultIdModel> _results = [];
+  bool _isLoading = true;
 
-  late Future<ResultIdModel?> _results;
-
-
+  // bool _hasError = false;
+  int? mathPoints;
+  int? englishPoints;
+  int? spSubjects;
+  String? currentLocalDate;
 
   @override
   void initState() {
     super.initState();
-//    _results = _fetchResults() ; // Initialize with the fetch method
+    _loadStudentId();
+    _allSubjectPoints();
   }
 
-  // Future<ResultIdModel?> _fetchResults() async {
-  //   try {
-  //     final apiService = ApiService();
-  //     final resultData = await apiService.resultId('5'); // Replace with actual ID
-  //
-  //     if (resultData != null) {
-  //       return resultData;
-  //     } else {
-  //       return null;
-  //     }
-  //   } catch (e) {
-  //     // Handle errors here
-  //     print('Error fetching results: $e');
-  //     return null;
-  //   }
-  // }
-  //
+
+  Future<void> _allSubjectPoints() async {
+    var subjectBox = Hive.box('auth');
+    spSubjects = await subjectBox.get('Majburiy Fanlar');
+    mathPoints = await subjectBox.get('Matematika');
+    englishPoints = await subjectBox.get('Xorijiy Til');
+  }
+
+
+  Future<void> _loadStudentId() async {
+    var box = Hive.box('auth');
+    userId = await box.get('user_id');
+
+    if (userId != null) {
+      final results = await _resultId(userId!);
+      if (results != null) {
+        setState(() {
+          _results = results;
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+
+  Future<List<ResultIdModel>?> _resultId(String userId) async {
+    try {
+      final response = await _dio.get(
+        '$baseUrl/api/v1/dtmtests/result/$userId',
+      );
+
+      print('Fetching results for user ID: $userId');
+      print('API response status code: ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = response.data;
+        return data.map((json) => ResultIdModel.fromJson(json)).toList();
+      } else {
+        print('API response status code: ${response.statusCode}');
+        print('API response data: ${response.data}');
+        return null;
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching result ID: $e');
+      }
+      return null;
+    }
+  }
 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xffEFEEFC),
-      body: SingleChildScrollView(
+      body: _isLoading
+          ? MyResultLoading()
+          : SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -64,19 +113,19 @@ class _MyResultsState extends State<MyResults> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Variant: 1234556',
+                          'Variant: ${_results.isNotEmpty ? _results.last
+                              .testCode : 'N/A'}',
                           textAlign: TextAlign.left,
                           style: TextStyle(
                             decoration: TextDecoration.none,
                             fontSize: 16,
                             color: const Color(0xffffffff),
                             fontFamily: 'Inter-SemiBold',
-                            fontWeight: FontWeight.normal,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
                         Text(
-                          '12.11.2024',
+                          '${_results.isNotEmpty ? _results.last.date : 'N/A'}',
                           textAlign: TextAlign.right,
                           style: TextStyle(
                             decoration: TextDecoration.none,
@@ -96,14 +145,14 @@ class _MyResultsState extends State<MyResults> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildInfoRow(
-                            'Majburiy Fanlar', '25 ta', width(context) * 0.07),
-                        const SizedBox(height: 5),
-                        _buildInfoRow(
-                            'Matematika', '27 ta', width(context) * 0.1),
-                        const SizedBox(height: 5),
-                        _buildInfoRow(
-                            'Xorijiy til', '30 ta', width(context) * 0.07),
+                        _buildRowPattern(
+                            'Majburiy Fanlar', '${spSubjects} ta'),
+                        const SizedBox(height: 10),
+                        _buildRowPattern(
+                            'Matematika', '${mathPoints} ta'),
+                        const SizedBox(height: 10),
+                        _buildRowPattern(
+                            'Xorijiy til', '${englishPoints} ta'),
                       ],
                     ),
                   ),
@@ -125,7 +174,7 @@ class _MyResultsState extends State<MyResults> {
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontFamily: 'Poppins-Medium',
-                                  fontSize: 13,
+                                  fontSize: 12,
                                   fontWeight: FontWeight.normal,
                                 ),
                               ),
@@ -134,22 +183,26 @@ class _MyResultsState extends State<MyResults> {
                                 borderRadius: BorderRadius.circular(8),
                                 child: DecoratedBox(
                                   decoration: BoxDecoration(
-                                    color: Color(0xFF264CEC), // Background color
+                                    color: Color(0xFF264CEC),
+                                    // Background color
                                     border: Border.all(
                                       color: Colors.white, // Border color
                                       width: 1, // Border width
                                     ),
-                                    borderRadius: BorderRadius.circular(8), // Match border radius
+                                    borderRadius: BorderRadius.circular(
+                                        8), // Match border radius
                                   ),
                                   child: SizedBox(
                                     width: 88,
                                     height: 38,
                                     child: Center(
                                       child: Text(
-                                        '100',
+                                        '${_results.isNotEmpty ? _results.last
+                                            .point : 'N/A'}',
                                         style: TextStyle(
-                                          color: Colors.white, // Text color
-                                          fontSize: 12, // Font size
+                                          color: Colors.white,
+                                          fontFamily: 'Poppins-Medium',
+                                          fontSize: 16, // Font size
                                         ),
                                       ),
                                     ),
@@ -174,14 +227,34 @@ class _MyResultsState extends State<MyResults> {
                 Text(
                   "Natijalar tarixi",
                   style: TextStyle(
-                    fontSize: 6 * devisePixel(context),
-                    fontWeight: FontWeight.bold,
+                      fontSize: 6 * devisePixel(context),
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Inter-SemiBold'
                   ),
                 ),
                 const SizedBox(
                   height: 8,
                 ),
-                ResultCard(),
+                SizedBox(
+                  height: MediaQuery
+                      .of(context)
+                      .size
+                      .height * 0.5,
+                  child: ListView.separated(
+                    itemCount: _results.length,
+                    itemBuilder: (context, index) {
+                      final result = _results[index];
+                      return ResultCard(
+                        testCode: result.testCode,
+                        point: result.point,
+                        date: result.date,
+                        mathPoint: mathPoints ?? 0,
+                        englishPoints: englishPoints ?? 0,
+                        spSubjectPoint: spSubjects ?? 0,);
+                    },
+                    separatorBuilder: (context, index) => SizedBox(height: 12),
+                  ),
+                ),
               ],
             ),
           ],
@@ -274,29 +347,67 @@ class _MyResultsState extends State<MyResults> {
     );
   }
 
-  Widget _buildInfoRow(String label, String value, double padding) {
+  Widget _buildInfoRow(String label, String value) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           label,
           style: TextStyle(
-              fontSize: 4.5 * devisePixel(context),
+              fontSize: 4 * devisePixel(context),
               color: whiteColor,
               fontFamily: 'Inter-Medium'),
         ),
         Padding(
-          padding: EdgeInsets.only(left: padding),
+          padding: EdgeInsets.only(left: 39),
           child: Text(
             value,
             style: TextStyle(
                 color: whiteColor,
-                fontSize: 4.5 * devisePixel(context),
+                fontSize: 10,
                 fontFamily: 'Inter-Medium'),
           ),
         ),
       ],
     );
   }
+
+  Widget _buildRowPattern(String label, String value) {
+    return SizedBox(
+      width: 140,
+      height: 16,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            textAlign: TextAlign.left,
+            style: TextStyle(
+              fontSize: 14,
+              color: Color(0xffffffff),
+              fontFamily: 'Inter-Medium',
+              fontWeight: FontWeight.normal,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+          Text(
+            value,
+            textAlign: TextAlign.right,
+            style: TextStyle(
+              decoration: TextDecoration.none,
+              fontSize: 14,
+              color: Color(0xffffffff),
+              fontFamily: 'Inter-Medium',
+              fontWeight: FontWeight.normal,
+            ),
+
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
+
 }
 
 // old
