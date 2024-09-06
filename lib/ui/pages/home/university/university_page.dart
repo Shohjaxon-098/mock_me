@@ -33,7 +33,7 @@ class UniverSity extends StatelessWidget {
                     Text(
                       "Oliygohlar",
                       style: TextStyle(
-                        fontSize: 6 * devisePixel(context),
+                        fontSize: 20,
                         fontWeight: FontWeight.w600,
                       ),
                     ),

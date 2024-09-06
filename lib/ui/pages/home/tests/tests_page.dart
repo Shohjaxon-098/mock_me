@@ -48,67 +48,87 @@ class TestsState extends State<Tests> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xffEFEEFC),
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(
-          "DTM testlar",
-          style: TextStyle(
-            fontSize: 6 * devisePixel(context),
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        backgroundColor: Colors.transparent,
-      ),
-      body: isLoading
-          ? Padding(
-              padding: const EdgeInsets.only(top: 25, left: 24, right: 24),
-              child: SizedBox(
-                height: double.maxFinite,
-                child: GridView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: 8,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      childAspectRatio: 1 / 1,
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 15,
-                      crossAxisSpacing: 15),
-                  itemBuilder: (context, index) => Shimmer.fromColors(
-                    baseColor: whiteColor,
-                    highlightColor: Colors.grey[200]!,
-                    child: const Card(),
+      body: Column(
+        children: [
+          SizedBox(
+            width: double.infinity,
+            child: Row(
+              children: [
+                IconButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: SvgPicture.asset(
+                    "assets/icons/arrow_back.svg",
+                    width: 15,
+                    height: 15,
                   ),
                 ),
-              ),
-            )
-          : Padding(
-              padding: const EdgeInsets.only(top: 25, left: 24, right: 24),
-              child: SizedBox(
-                width: double.maxFinite,
-                height: double.maxFinite,
-                child: GridView.builder(
-                  itemCount: dtmDirections.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      childAspectRatio: 1 / 1,
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 15,
-                      crossAxisSpacing: 15),
-                  itemBuilder: (context, index) {
-                    final direction = dtmDirections[index];
-                    return TestWidget(direction.name ?? "Nomalum fan", () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => VariantSubject(
-                                  directionCode: direction.id.toString(),
-                                  name: direction.name,
-                                )),
-                      );
-                    });
-                  },
-                  physics: const NeverScrollableScrollPhysics(),
+                SizedBox(
+                  width: width(context) * 0.3,
                 ),
-              ),
+                Text(
+                  "Testlar",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
             ),
+          ),
+          isLoading
+              ? Padding(
+                  padding: const EdgeInsets.only(top: 25, left: 24, right: 24),
+                  child: SizedBox(
+                    height: double.maxFinite,
+                    child: GridView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: 8,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                              childAspectRatio: 1 / 1,
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 15,
+                              crossAxisSpacing: 15),
+                      itemBuilder: (context, index) => Shimmer.fromColors(
+                        baseColor: whiteColor,
+                        highlightColor: Colors.grey[200]!,
+                        child: const Card(),
+                      ),
+                    ),
+                  ),
+                )
+              : Padding(
+                  padding: const EdgeInsets.only(top: 25, left: 24, right: 24),
+                  child: SizedBox(
+                    width: double.maxFinite,
+                    height: double.maxFinite,
+                    child: GridView.builder(
+                      itemCount: dtmDirections.length,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                              childAspectRatio: 1 / 1,
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 15,
+                              crossAxisSpacing: 15),
+                      itemBuilder: (context, index) {
+                        final direction = dtmDirections[index];
+                        return TestWidget(direction.name ?? "Nomalum fan", () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => VariantSubject(
+                                      directionCode: direction.id.toString(),
+                                      name: direction.name,
+                                    )),
+                          );
+                        });
+                      },
+                      physics: const NeverScrollableScrollPhysics(),
+                    ),
+                  ),
+                ),
+        ],
+      ),
     );
   }
 }

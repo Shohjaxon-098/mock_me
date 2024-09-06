@@ -1,7 +1,7 @@
 // ignore_for_file: avoid_print
 
-
 import 'package:talaba_uz/utils/tools/file_important.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -206,7 +206,7 @@ class _HomeState extends State<Home> {
         title: Text(
           'Home',
           style: TextStyle(
-            fontSize: 6 * devisePixel(context),
+            fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -277,7 +277,7 @@ class _HomeState extends State<Home> {
                                         _textFromJsonDegree(),
                                         style: TextStyle(
                                           color: whiteColor,
-                                          fontSize: 5 * devisePixel(context),
+                                          fontSize: 14,
                                           fontWeight: FontWeight.w700,
                                         ),
                                       ),
@@ -290,8 +290,7 @@ class _HomeState extends State<Home> {
                                           jsonDegree['date'],
                                           style: TextStyle(
                                             color: whiteColor,
-                                            fontSize:
-                                                4.5 * devisePixel(context),
+                                            fontSize: 12,
                                             fontWeight: FontWeight.w500,
                                           ),
                                         ),
@@ -301,11 +300,10 @@ class _HomeState extends State<Home> {
                                       Row(
                                         children: [
                                           Text(
-                                            "Bali: ",
+                                            "Darajasi: ",
                                             style: TextStyle(
                                               fontWeight: FontWeight.w500,
-                                              fontSize:
-                                                  4.5 * devisePixel(context),
+                                              fontSize: 14,
                                               color: const Color(0xffA8B7F7),
                                             ),
                                           ),
@@ -316,8 +314,7 @@ class _HomeState extends State<Home> {
                                               style: TextStyle(
                                                 color: whiteColor,
                                                 fontWeight: FontWeight.bold,
-                                                fontSize:
-                                                    5 * devisePixel(context),
+                                                fontSize: 14,
                                               ),
                                             ),
                                         ],
@@ -338,7 +335,7 @@ class _HomeState extends State<Home> {
                                     "87 %",
                                     style: TextStyle(
                                         color: whiteColor,
-                                        fontSize: 6.5 * devisePixel(context),
+                                        fontSize: 16,
                                         fontWeight: FontWeight.w600),
                                   ),
                                 ),
@@ -360,7 +357,7 @@ class _HomeState extends State<Home> {
                                   "Sizda natijalar mavjud emas :(",
                                   style: TextStyle(
                                     color: whiteColor,
-                                    fontSize: 5 * devisePixel(context),
+                                    fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -370,7 +367,7 @@ class _HomeState extends State<Home> {
                                 Text(
                                     style: TextStyle(
                                       color: whiteColor,
-                                      fontSize: 4 * devisePixel(context),
+                                      fontSize: 12,
                                       fontWeight: FontWeight.w500,
                                     ),
                                     "Siz testlarimizdan ishlaganingizda shu oynada \noxirgi natijalaringizni ko’rishingiz mumkin bo’ladi. ")
@@ -399,9 +396,9 @@ class _HomeState extends State<Home> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              "Testlar",
+              "Dtm testlar",
               style: TextStyle(
-                fontSize: 6 * devisePixel(context),
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -424,13 +421,13 @@ class _HomeState extends State<Home> {
                     "Barchasi",
                     style: TextStyle(
                       fontWeight: FontWeight.w500,
-                      fontSize: 4.5 * devisePixel(context),
+                      fontSize: 13,
                       color: blueColor,
                     ),
                   ),
                 ),
                 Icon(
-                  size: 18,
+                  size: 16,
                   Icons.arrow_forward_ios_rounded,
                   color: blueColor,
                 )
@@ -479,7 +476,7 @@ class _HomeState extends State<Home> {
             Text(
               "Oliygohlar",
               style: TextStyle(
-                fontSize: 6 * devisePixel(context),
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -502,13 +499,13 @@ class _HomeState extends State<Home> {
                     "Barchasi",
                     style: TextStyle(
                       fontWeight: FontWeight.w500,
-                      fontSize: 4.5 * devisePixel(context),
+                      fontSize: 13,
                       color: blueColor,
                     ),
                   ),
                 ),
                 Icon(
-                  size: 18,
+                  size: 16,
                   Icons.arrow_forward_ios_rounded,
                   color: blueColor,
                 )
